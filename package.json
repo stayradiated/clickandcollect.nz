@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "next-on-netlify",
     "start": "next start",
+    "export": "next export",
     "tidy": "pkg-tidy"
   },
   "dependencies": {
@@ -26,7 +26,6 @@
   "devDependencies": {
     "@stayradiated/pkg": "4.2.0",
     "@types/luxon": "1.22.0",
-    "@types/react": "16.9.26",
-    "next-on-netlify": "1.0.1"
+    "@types/react": "16.9.26"
   }
 }

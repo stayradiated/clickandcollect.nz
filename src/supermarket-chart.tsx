@@ -18,7 +18,7 @@ import { toSum } from './utils'
 
 interface Props {
   snapshots: Snapshot[],
-  onTrack: (time: Date) => void
+  onTrack: (time: Date) => void,
 }
 
 const SupermarketChart = memo((props: Props) => {
@@ -52,7 +52,7 @@ const SupermarketChart = memo((props: Props) => {
       setState({ trackerValue: eventValue, trackerEvent: e })
 
       const eventTime = new Date(
-        e.begin().getTime() + (e.end().getTime() - e.begin().getTime()) / 2
+        e.begin().getTime() + (e.end().getTime() - e.begin().getTime()) / 2,
       )
       onTrack(eventTime)
     } else {
@@ -100,10 +100,7 @@ const SupermarketChart = memo((props: Props) => {
                 },
               }}
             />
-            <ScatterChart
-              axis="axis"
-              series={timeseries}
-            />
+            <ScatterChart axis="axis" series={timeseries} />
             <Baseline axis="axis" value={0} />
             <EventMarker
               type="flag"

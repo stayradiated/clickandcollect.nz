@@ -26,13 +26,16 @@ const SupermarketInfo = memo((props: Props) => {
 
   const [trackedDate, setTrackedDate] = useState(null)
 
-  const handleTrack = useCallback((date) => {
-    if (date == null) {
-      setTrackedDate(null)
-    } else {
-      setTrackedDate(date.getTime())
-    }
-  }, [setTrackedDate])
+  const handleTrack = useCallback(
+    (date) => {
+      if (date == null) {
+        setTrackedDate(null)
+      } else {
+        setTrackedDate(date.getTime())
+      }
+    },
+    [setTrackedDate],
+  )
 
   const snapshot = data?.find((snapshot) => {
     return new Date(snapshot.date).getTime() === trackedDate
@@ -57,7 +60,9 @@ const SupermarketInfo = memo((props: Props) => {
 
       <h4>Last 24 Hours</h4>
 
-      {data != null && <SupermarketChart snapshots={data} onTrack={handleTrack} />}
+      {data != null && (
+        <SupermarketChart snapshots={data} onTrack={handleTrack} />
+      )}
 
       <style jsx>{`
         .container {
