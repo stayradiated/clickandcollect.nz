@@ -2,7 +2,6 @@ import { memo, useState, useEffect } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
 import Link from 'next/link'
 import classNames from 'classnames'
-import Fuse from 'fuse.js'
 
 import { Supermarket } from './types'
 import { toSum } from './utils'
@@ -13,30 +12,40 @@ interface Props {
 
 const DEBOUNCE_MS = 250
 
+const search = (rawQuery: string, supermarkets: Supermarket[]) => {
+  const words = rawQuery
+    .trim()
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.trim())
+  return supermarkets.filter((supermarket) => {
+    const { chain, name, address } = supermarket
+    return words.every((word) => {
+      return (
+        chain?.toLowerCase().includes(word) ||
+        name?.toLowerCase().includes(word) ||
+        address?.toLowerCase().includes(word)
+      )
+    })
+  })
+}
+
 const SupermarketList = memo((props: Props) => {
   const { supermarkets } = props
 
-  const [fuse, setFuse] = useState()
   const [searchResults, setSearchResults] = useState(supermarkets)
 
-  useEffect(() => {
-    const fuse = new Fuse(supermarkets, {
-      shouldSort: true,
-      threshold: 0.2,
-      distance: 200,
-      keys: ['chain', 'name', 'address'],
-    })
-    setFuse(fuse)
-  }, [supermarkets])
-
-  const [debouncedCallback] = useDebouncedCallback((query) => {
-    if (query.trim().length === 0) {
-      setSearchResults(supermarkets)
-    } else if (fuse != null) {
-      const resultList = fuse.search(query)
-      setSearchResults(resultList.map((r) => r.item))
-    }
-  }, DEBOUNCE_MS)
+  const [debouncedCallback] = useDebouncedCallback(
+    (query) => {
+      if (query.trim().length === 0) {
+        setSearchResults(supermarkets)
+      } else {
+        setSearchResults(search(query, supermarkets))
+      }
+    },
+    DEBOUNCE_MS,
+    { maxWait: 4 * DEBOUNCE_MS },
+  )
 
   return (
     <div className="container">

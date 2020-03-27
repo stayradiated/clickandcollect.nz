@@ -41,6 +41,10 @@ const SupermarketInfo = memo((props: Props) => {
     return new Date(snapshot.date).getTime() === trackedDate
   })
 
+  const lastUpdatedAt = DateTime.fromISO(
+    (data && data[0]?.date) || supermarket.latestSnapshot.date,
+  )
+
   return (
     <div className="container">
       <header className="header">
@@ -49,10 +53,7 @@ const SupermarketInfo = memo((props: Props) => {
         </h2>
         <p className="address">{supermarket.address}</p>
         <p className="last-updated-at">
-          Last updated at{' '}
-          {DateTime.fromISO(supermarket.latestSnapshot.date).toFormat(
-            DATE_FORMAT,
-          )}
+          Last updated at {lastUpdatedAt.toFormat(DATE_FORMAT)}
         </p>
       </header>
 
