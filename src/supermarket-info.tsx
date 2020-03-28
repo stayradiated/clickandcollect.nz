@@ -2,6 +2,7 @@ import { memo, useState, useCallback } from 'react'
 import { DateTime } from 'luxon'
 import useSWR from 'swr'
 import fetch from 'isomorphic-unfetch'
+import Head from 'next/head'
 
 import Calendar from './calendar'
 import SupermarketChart from './supermarket-chart'
@@ -16,11 +17,32 @@ const DATE_FORMAT = 'LLLL d yyyy, h:mm:ss a'
 
 const fetcher = (url) => fetch(url).then((r) => r.json())
 
+const getSupermarketLink = (supermarket: Supermarket) => {
+  switch (supermarket.chain) {
+    case 'Countdown': {
+      return 'https://shop.countdown.co.nz/'
+    }
+    case 'FreshChoice': {
+      const name = supermarket.name
+        .toLowerCase()
+        .replace(/\s/g, '')
+        .split(',')[0]
+      return `https://${name}.store.freshchoice.co.nz/`
+    }
+    case 'New World': {
+      return 'https://www.ishopnewworld.co.nz/'
+    }
+    case "PAK'nSAVE": {
+      return 'https://www.paknsaveonline.co.nz/'
+    }
+  }
+}
+
 const SupermarketInfo = memo((props: Props) => {
   const { supermarket } = props
 
-  const { data, error } = useSWR<Snapshot[]>(
-    `/api/slots/${supermarket?.id}.json`,
+  const { data } = useSWR<Snapshot[]>(
+    `https://api.clickandcollect.nz/slots/${supermarket?.id}.json`,
     fetcher,
   )
 
@@ -47,9 +69,21 @@ const SupermarketInfo = memo((props: Props) => {
 
   return (
     <div className="container">
+      <Head>
+        <title>
+          {supermarket.chain} {supermarket.name} - Click & Collect
+        </title>
+      </Head>
       <header className="header">
         <h2 className="title">
           {supermarket.chain} {supermarket.name}
+          <a
+            className="open-store"
+            target="_blank"
+            href={getSupermarketLink(supermarket)}
+          >
+            Shop Online
+          </a>
         </h2>
         <p className="address">{supermarket.address}</p>
         <p className="last-updated-at">
@@ -75,12 +109,38 @@ const SupermarketInfo = memo((props: Props) => {
           display: grid;
           grid-template-areas:
             'title last-updated-at'
-            'address address';
+            'address last-updated-at';
+          grid-template-columns: 1fr auto;
           margin-bottom: 1em;
         }
         .title {
           margin: 0;
           grid-area: title;
+        }
+        .open-store {
+          color: #17c0eb;
+          margin-left: 1em;
+          font-size: 0.6em;
+          border: 1px solid #18dcff;
+          border-radius: 4px;
+          padding: 0.2em 0.4em;
+        }
+        .open-store:focus {
+          background: none;
+          border-color: #ff9f1a;
+          color: #ffaf40;
+          outline: none;
+        }
+        .open-store:hover {
+          border-color: #18dcff;
+          text-decoration: none;
+          background: #18dcff;
+          color: #fff;
+        }
+        .open-store:active {
+          border-color: #7d5fff;
+          background: #7d5fff;
+          color: #fff;
         }
         .address {
           margin: 0;
@@ -90,7 +150,11 @@ const SupermarketInfo = memo((props: Props) => {
           grid-area: last-updated-at;
           margin: 0;
           text-align: right;
+          align-self: center;
           font-style: italic;
+          border: 3px solid #eee;
+          padding: 0.5em 1em;
+          border-radius: 4px;
         }
       `}</style>
     </div>

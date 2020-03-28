@@ -1,24 +1,38 @@
 import { memo, useState, useEffect } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import classNames from 'classnames'
 
 import { Supermarket } from './types'
-import { toSum } from './utils'
+import { toSum, first, buildSlug } from './utils'
 
 interface Props {
   supermarkets: Supermarket[],
 }
 
+interface Search {
+  query: string,
+  results: Supermarket[],
+}
+
 const DEBOUNCE_MS = 250
 
-const search = (rawQuery: string, supermarkets: Supermarket[]) => {
+const performSearch = (
+  rawQuery: string,
+  supermarkets: Supermarket[],
+): Search => {
+  if (typeof rawQuery !== 'string' || rawQuery.trim().length === 0) {
+    return { query: rawQuery, results: supermarkets }
+  }
+
   const words = rawQuery
     .trim()
     .toLowerCase()
     .split(' ')
     .map((word) => word.trim())
-  return supermarkets.filter((supermarket) => {
+
+  const results = supermarkets.filter((supermarket) => {
     const { chain, name, address } = supermarket
     return words.every((word) => {
       return (
@@ -28,20 +42,42 @@ const search = (rawQuery: string, supermarkets: Supermarket[]) => {
       )
     })
   })
+
+  return {
+    query: rawQuery,
+    results,
+  }
 }
 
 const SupermarketList = memo((props: Props) => {
   const { supermarkets } = props
 
-  const [searchResults, setSearchResults] = useState(supermarkets)
+  const router = useRouter()
+  const initialQuery = first(router.query.q)
+
+  const [search, setSearch] = useState<Search>({
+    query: initialQuery,
+    results: supermarkets,
+  })
+
+  useEffect(() => {
+    if (initialQuery != null) {
+      console.log({ initialQuery })
+      setSearch(performSearch(initialQuery, supermarkets))
+    }
+  }, [initialQuery])
 
   const [debouncedCallback] = useDebouncedCallback(
     (query) => {
-      if (query.trim().length === 0) {
-        setSearchResults(supermarkets)
-      } else {
-        setSearchResults(search(query, supermarkets))
-      }
+      setSearch(performSearch(query, supermarkets))
+      router.replace(
+        '/[slug]',
+        {
+          pathname: `/${router.query.slug}`,
+          query: { q: query },
+        },
+        { shallow: true },
+      )
     },
     DEBOUNCE_MS,
     { maxWait: 4 * DEBOUNCE_MS },
@@ -52,11 +88,12 @@ const SupermarketList = memo((props: Props) => {
       <input
         className="input"
         type="search"
+        defaultValue={initialQuery}
         placeholder="Search supermarkets..."
         onChange={(e) => debouncedCallback(e.target.value)}
       />
       <ul className="list">
-        {searchResults.map((supermarket) => {
+        {search.results.map((supermarket) => {
           const sumAvailable =
             supermarket.latestSnapshot == null
               ? 0
@@ -64,6 +101,8 @@ const SupermarketList = memo((props: Props) => {
                 toSum,
                 0,
               )
+
+          const query = search.query ? { q: search.query } : {}
 
           return (
             <li
@@ -74,9 +113,13 @@ const SupermarketList = memo((props: Props) => {
               })}
             >
               <Link
-                href="/supermarket/[supermarketId]"
-                as={`/supermarket/${supermarket.id}`}
+                href="/[slug]"
+                as={{
+                  pathname: `/${buildSlug(supermarket)}`,
+                  query,
+                }}
                 passHref
+                replace
               >
                 <a className="list-item-link">
                   <div className="name">

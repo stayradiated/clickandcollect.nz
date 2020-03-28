@@ -1,24 +1,34 @@
-import { useState, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
+import useSWR from 'swr'
+import fetch from 'isomorphic-unfetch'
 
 import SupermarketList from './supermarket-list'
 import SupermarketInfo from './supermarket-info'
 
 import { Supermarket } from './types'
+import { buildSlug } from './utils'
 
-interface Props {
-  supermarkets: Supermarket[],
-}
+const fetcher = (url) => fetch(url).then((r) => r.json())
 
-const App = (props: Props) => {
-  const { supermarkets } = props
+const App = () => {
+  const { data: supermarkets, error } = useSWR<Supermarket[]>(
+    'https://api.clickandcollect.nz/supermarkets.json',
+    fetcher,
+  )
+
   const router = useRouter()
 
-  const { supermarketId: rawSupermarketId } = router.query
-  const supermarketId =
-    typeof rawSupermarketId === 'string' && parseInt(rawSupermarketId, 10)
-  const supermarket = supermarkets.find((s) => s?.id === supermarketId)
+  if (supermarkets == null) {
+    return <div>Loading...</div>
+  }
+
+  if (error != null) {
+    return <div>{error.message}</div>
+  }
+
+  const { slug } = router.query
+  const supermarket = supermarkets.find((s) => buildSlug(s) === slug)
 
   return (
     <div className="app">

@@ -8,7 +8,6 @@ import {
   Charts,
   EventMarker,
   Resizable,
-  ScatterChart,
   YAxis,
 } from 'react-timeseries-charts'
 import { TimeSeries, TimeRange } from 'pondjs'
@@ -80,7 +79,7 @@ const SupermarketChart = memo((props: Props) => {
             <AreaChart
               axis="axis"
               series={timeseries}
-              interpolation="curveStep"
+              interpolation="curveLinear"
               style={{
                 value: {
                   line: {
@@ -100,7 +99,6 @@ const SupermarketChart = memo((props: Props) => {
                 },
               }}
             />
-            <ScatterChart axis="axis" series={timeseries} />
             <Baseline axis="axis" value={0} />
             <EventMarker
               type="flag"
