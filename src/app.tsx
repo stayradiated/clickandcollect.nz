@@ -30,9 +30,14 @@ const App = () => {
   const { slug } = router.query
   const supermarket = supermarkets.find((s) => buildSlug(s) === slug)
 
+  const title = supermarket
+    ? `${supermarket.chain} ${supermarket.name} - Click & Collect`
+    : `Click & Collect`
+
   return (
     <div className="app">
       <Head>
+        <title>{title}</title>
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/kognise/water.css@latest/dist/light.min.css"
@@ -40,6 +45,18 @@ const App = () => {
         <link
           rel="stylesheet"
           href="//brick.freetls.fastly.net/Source+Sans+Pro:400,700"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
         />
       </Head>
       <SupermarketList supermarkets={supermarkets} />

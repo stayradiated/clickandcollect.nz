@@ -2,7 +2,6 @@ import { memo, useState, useCallback } from 'react'
 import { DateTime } from 'luxon'
 import useSWR from 'swr'
 import fetch from 'isomorphic-unfetch'
-import Head from 'next/head'
 
 import Calendar from './calendar'
 import SupermarketChart from './supermarket-chart'
@@ -69,11 +68,6 @@ const SupermarketInfo = memo((props: Props) => {
 
   return (
     <div className="container">
-      <Head>
-        <title>
-          {supermarket.chain} {supermarket.name} - Click & Collect
-        </title>
-      </Head>
       <header className="header">
         <h2 className="title">
           {supermarket.chain} {supermarket.name}
@@ -163,7 +157,6 @@ const SupermarketInfo = memo((props: Props) => {
           border-radius: 4px;
           margin-top: 1em;
         }
-
 
         @media only screen and (min-width: 500px) {
           .container {
