@@ -1,6 +1,6 @@
 {
-  "name": "pickup",
-  "version": "0.1.0",
+  "name": "@stayradiated/clickandcollect.nz",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -17,7 +17,6 @@
     "pondjs": "0.9.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-textfit": "1.1.0",
     "react-timeseries-charts": "0.16.1",
     "swr": "0.1.18",
     "use-debounce": "3.4.0"

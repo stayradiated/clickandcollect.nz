@@ -1,7 +1,6 @@
 import { memo } from 'react'
 import { DateTime } from 'luxon'
 import classNames from 'classnames'
-import TextFit from 'react-textfit'
 
 interface Props {
   date: DateTime,
@@ -42,9 +41,9 @@ const CalendarCell = memo((props: Props) => {
     >
       <div className="content">
         <div className="day">{dayName}</div>
-        <div className="count">
-          <TextFit mode="single">{count}</TextFit>
-        </div>
+        <svg className="count" viewBox="0 0 25 25">
+          <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle">{count}</text>
+        </svg>
       </div>
 
       <style jsx>{`
@@ -66,8 +65,8 @@ const CalendarCell = memo((props: Props) => {
         .cell.no-data {
           opacity: 0.5;
         }
-        .cell.eq-0 .count {
-          color: #ccc;
+        .cell.eq-0 .count text {
+          fill: #ccc;
         }
         .cell.lt-10 {
           box-shadow: inset 0 0 0 3px #ffb8b8;
@@ -85,20 +84,23 @@ const CalendarCell = memo((props: Props) => {
           left: 0;
           height: 100%;
           width: 100%;
-          padding: 1em;
+          padding: 0.5em 1em;
           box-sizing: border-box;
         }
 
         .day {
           text-transform: uppercase;
-          position: absolute;
           font-weight: bold;
+          margin: 0;
         }
 
         .count {
-          text-align: center;
+          width: 100%;
+        }
+        .count text {
           font-weight: bold;
-          font-size: 2em;
+          text-align: center;
+          fill: #363636;
         }
       `}</style>
     </div>
