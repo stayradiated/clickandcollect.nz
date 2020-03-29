@@ -20,6 +20,11 @@ const CalendarWeekday = memo((props: Props) => {
           background: rgba(0, 0, 0, 0.05);
           padding: 0.3em 0;
           border-radius: 4px;
+
+          display: none;
+        }
+        @media only screen and (min-width: 500px) {
+          display: block;
         }
       `}</style>
     </div>

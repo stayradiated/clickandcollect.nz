@@ -119,7 +119,6 @@ const SupermarketList = memo((props: Props) => {
                   query,
                 }}
                 passHref
-                replace
               >
                 <a className="list-item-link">
                   <div className="name">
@@ -134,10 +133,10 @@ const SupermarketList = memo((props: Props) => {
       </ul>
       <style jsx>{`
         .container {
-          width: 30em;
           display: flex;
           flex-direction: column;
           background: #222;
+          max-width: 400px;
         }
         .input {
           margin: 1em;

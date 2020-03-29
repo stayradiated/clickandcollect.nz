@@ -45,8 +45,13 @@ const Calendar = memo((props: Props) => {
       <style jsx>{`
         .grid {
           display: grid;
-          grid-template-columns: repeat(7, 1fr);
+          grid-template-columns: repeat(3, 1fr);
           grid-gap: 10px;
+        }
+        @media only screen and (min-width: 500px) {
+          .grid {
+            grid-template-columns: repeat(7, 1fr);
+          }
         }
       `}</style>
     </div>

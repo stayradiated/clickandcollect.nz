@@ -104,13 +104,17 @@ const SupermarketInfo = memo((props: Props) => {
           flex: 1;
           padding: 1em;
           overflow-y: auto;
+          background: #fff;
+
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          box-sizing: border-box;
         }
+
         .header {
-          display: grid;
-          grid-template-areas:
-            'title last-updated-at'
-            'address last-updated-at';
-          grid-template-columns: 1fr auto;
           margin-bottom: 1em;
         }
         .title {
@@ -118,12 +122,13 @@ const SupermarketInfo = memo((props: Props) => {
           grid-area: title;
         }
         .open-store {
+          display: inline-block;
           color: #17c0eb;
-          margin-left: 1em;
           font-size: 0.6em;
           border: 1px solid #18dcff;
           border-radius: 4px;
           padding: 0.2em 0.4em;
+          margin-left: 1em;
         }
         .open-store:focus {
           background: none;
@@ -149,12 +154,28 @@ const SupermarketInfo = memo((props: Props) => {
         .last-updated-at {
           grid-area: last-updated-at;
           margin: 0;
-          text-align: right;
+          text-align: center;
           align-self: center;
+          font-size: 0.8em;
           font-style: italic;
           border: 3px solid #eee;
           padding: 0.5em 1em;
           border-radius: 4px;
+          margin-top: 1em;
+        }
+
+
+        @media only screen and (min-width: 500px) {
+          .container {
+            position: static;
+          }
+          .header {
+            display: grid;
+            grid-template-areas:
+              'title last-updated-at'
+              'address last-updated-at';
+            grid-template-columns: 1fr auto;
+          }
         }
       `}</style>
     </div>

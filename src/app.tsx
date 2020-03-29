@@ -56,7 +56,13 @@ const App = () => {
       <style jsx>{`
         .app {
           height: 100vh;
-          display: flex;
+          width: 100vw;
+          position: relative;
+        }
+        @media only screen and (min-width: 500px) {
+          .app {
+            display: flex;
+          }
         }
       `}</style>
     </div>
