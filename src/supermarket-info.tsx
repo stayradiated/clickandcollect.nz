@@ -91,28 +91,10 @@ const SupermarketInfo = memo((props: Props) => {
 
       <SupermarketChart snapshots={data || []} onTrack={handleTrack} />
 
-      <footer>
-        <a
-          target="_blank"
-          href="https://github.com/stayradiated/clickandcollect.nz"
-        >
-          About This Site
-        </a>
-      </footer>
-
       <style jsx>{`
         .container {
           flex: 1;
           padding: 1em;
-          overflow-y: auto;
-          background: #fff;
-
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          box-sizing: border-box;
         }
 
         .header {
@@ -166,9 +148,6 @@ const SupermarketInfo = memo((props: Props) => {
         }
 
         @media only screen and (min-width: 500px) {
-          .container {
-            position: static;
-          }
           .header {
             display: grid;
             grid-template-areas:

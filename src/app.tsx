@@ -60,7 +60,24 @@ const App = () => {
         />
       </Head>
       <SupermarketList supermarkets={supermarkets} />
-      {supermarket && <SupermarketInfo supermarket={supermarket} />}
+      <main>
+        {supermarket && <SupermarketInfo supermarket={supermarket} />}
+        <footer>
+          <a
+            target="_blank"
+            href="https://contact.george.czabania.com/?product=clickandcollect.nz"
+          >
+            Feedback
+          </a>
+          {' | '}
+          <a
+            target="_blank"
+            href="https://github.com/stayradiated/clickandcollect.nz"
+          >
+            About This Site
+          </a>
+        </footer>
+      </main>
       <style jsx global>{`
         body {
           width: 100vw;
@@ -76,6 +93,33 @@ const App = () => {
           width: 100vw;
           position: relative;
           display: flex;
+        }
+        main {
+          background: #fff;
+          overflow-y: auto;
+
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          box-sizing: border-box;
+        }
+        footer {
+          text-align: right;
+          margin: 1em 0.5em;
+        }
+        footer a {
+          margin: 0 0.5em;
+        }
+        @media only screen and (min-width: 500px) {
+          main {
+            position: static;
+          }
         }
       `}</style>
     </div>
