@@ -42,7 +42,7 @@ const CalendarCell = memo((props: Props) => {
       <div className="content">
         <div className="day">{dayName}</div>
         <svg className="count" viewBox="0 0 25 25">
-          <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle">
+          <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle">
             {count}
           </text>
         </svg>
