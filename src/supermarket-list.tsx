@@ -136,7 +136,7 @@ const SupermarketList = memo((props: Props) => {
           display: flex;
           flex-direction: column;
           background: #222;
-          max-width: 400px;
+          width: 400px;
         }
         .input {
           margin: 1em;
