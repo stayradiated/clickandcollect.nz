@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import { memo, useCallback, useState } from 'react'
 import {
   AreaChart,
+  ScatterChart,
   Baseline,
   ChartContainer,
   ChartRow,
@@ -20,9 +21,7 @@ interface Props {
   onTrack: (time: Date) => void,
 }
 
-const SupermarketChart = memo((props: Props) => {
-  const { snapshots, onTrack } = props
-
+const buildTimeSeries = (snapshots: Snapshot[]) => {
   const points = snapshots
     .map((snapshot) => {
       const date = DateTime.fromISO(snapshot.date)
@@ -33,37 +32,52 @@ const SupermarketChart = memo((props: Props) => {
       return a[0] - b[0]
     })
 
-  const timeseries = new TimeSeries({
+  const timeSeries = new TimeSeries({
     name: 'snapshots',
     columns: ['time', 'value'],
     points,
   })
 
+  return timeSeries
+}
+
+const SupermarketChart = memo((props: Props) => {
+  const { snapshots, onTrack } = props
+
+  if (snapshots.length === 0) {
+    return <div>Loading...</div>
+  }
+
+  const timeSeries = buildTimeSeries(snapshots)
+
   const [state, setState] = useState({
-    trackerValue: '-- °C',
+    trackerValue: '0',
     trackerEvent: null,
   })
 
-  const handleTrackerChanged = useCallback((t) => {
-    if (t) {
-      const e = timeseries.atTime(t)
-      const eventValue = e.get('value')
-      setState({ trackerValue: eventValue, trackerEvent: e })
+  const handleTrackerChanged = useCallback(
+    (t) => {
+      if (t) {
+        const e = timeSeries.atTime(t)
+        const eventValue = e.get('value').toString()
+        setState({ trackerValue: eventValue, trackerEvent: e })
 
-      const eventTime = new Date(
-        e.begin().getTime() + (e.end().getTime() - e.begin().getTime()) / 2,
-      )
-      onTrack(eventTime)
-    } else {
-      setState({ trackerValue: null, trackerEvent: null })
-      onTrack(null)
-    }
-  }, [])
+        const eventTime = new Date(
+          e.begin().getTime() + (e.end().getTime() - e.begin().getTime()) / 2,
+        )
+        onTrack(eventTime)
+      } else {
+        setState({ trackerValue: null, trackerEvent: null })
+        onTrack(null)
+      }
+    },
+    [timeSeries, onTrack],
+  )
 
   return (
     <Resizable>
       <ChartContainer
-        timeRange={timeseries.timerange()}
+        timeRange={timeSeries.timerange()}
         onTrackerChanged={handleTrackerChanged}
       >
         <ChartRow height="200">
@@ -71,22 +85,21 @@ const SupermarketChart = memo((props: Props) => {
             id="axis"
             label="# Available Slots"
             min={0}
-            max={timeseries.max(undefined) + 20}
+            max={timeSeries.max(undefined) + 20}
             width="60"
             format=".0f"
           />
           <Charts>
+            <Baseline axis="axis" value={0} />
             <AreaChart
               axis="axis"
-              series={timeseries}
+              series={timeSeries}
               interpolation="curveLinear"
               style={{
                 value: {
                   line: {
                     normal: {
-                      stroke: '#17c0eb',
-                      fill: 'none',
-                      strokeWidth: 2,
+                      strokeWidth: 0,
                     },
                   },
                   area: {
@@ -99,7 +112,17 @@ const SupermarketChart = memo((props: Props) => {
                 },
               }}
             />
-            <Baseline axis="axis" value={0} />
+            <ScatterChart
+              axis="axis"
+              series={timeSeries}
+              style={{
+                value: {
+                  normal: {
+                    fill: '#7158e2',
+                  },
+                },
+              }}
+            />
             <EventMarker
               type="flag"
               axis="axis"
@@ -107,7 +130,7 @@ const SupermarketChart = memo((props: Props) => {
               info={[{ label: 'Available', value: state.trackerValue }]}
               infoWidth={120}
               markerRadius={2}
-              markerStyle={{ fill: 'black' }}
+              markerStyle={{ fill: '#3d3d3d' }}
             />
           </Charts>
         </ChartRow>

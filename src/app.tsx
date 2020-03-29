@@ -75,11 +75,7 @@ const App = () => {
           height: 100vh;
           width: 100vw;
           position: relative;
-        }
-        @media only screen and (min-width: 500px) {
-          .app {
-            display: flex;
-          }
+          display: flex;
         }
       `}</style>
     </div>

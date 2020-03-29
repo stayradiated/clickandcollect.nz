@@ -89,9 +89,16 @@ const SupermarketInfo = memo((props: Props) => {
 
       <h4>Last 24 Hours</h4>
 
-      {data != null && (
-        <SupermarketChart snapshots={data} onTrack={handleTrack} />
-      )}
+      <SupermarketChart snapshots={data || []} onTrack={handleTrack} />
+
+      <footer>
+        <a
+          target="_blank"
+          href="https://github.com/stayradiated/clickandcollect.nz"
+        >
+          About This Site
+        </a>
+      </footer>
 
       <style jsx>{`
         .container {
