@@ -2,6 +2,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import useSWR from 'swr'
 import fetch from 'isomorphic-unfetch'
+import classNames from 'classnames'
 
 import SupermarketList from './supermarket-list'
 import SupermarketInfo from './supermarket-info'
@@ -60,7 +61,7 @@ const App = () => {
         />
       </Head>
       <SupermarketList supermarkets={supermarkets} />
-      <main>
+      <main className={classNames({ selected: supermarket != null })}>
         {supermarket && <SupermarketInfo supermarket={supermarket} />}
         <footer>
           <a
@@ -99,8 +100,8 @@ const App = () => {
           overflow-y: auto;
 
           flex: 1;
-          display: flex;
           flex-direction: column;
+          justify-content: flex-end;
 
           position: absolute;
           top: 0;
@@ -108,6 +109,12 @@ const App = () => {
           width: 100%;
           height: 100%;
           box-sizing: border-box;
+
+          display: none;
+        }
+        main.selected {
+          display: flex;
+          justify-content: flex-start;
         }
         footer {
           text-align: right;
@@ -119,6 +126,7 @@ const App = () => {
         @media only screen and (min-width: 500px) {
           main {
             position: static;
+            display: flex;
           }
         }
       `}</style>
