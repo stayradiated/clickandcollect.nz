@@ -71,15 +71,15 @@ const SupermarketInfo = memo((props: Props) => {
       <header className="header">
         <h2 className="title">
           {supermarket.chain} {supermarket.name}
-          <a
-            className="open-store"
-            target="_blank"
-            href={getSupermarketLink(supermarket)}
-          >
-            Shop Online
-          </a>
         </h2>
         <p className="address">{supermarket.address}</p>
+        <a
+          className="open-store"
+          target="_blank"
+          href={getSupermarketLink(supermarket)}
+        >
+          Shop Online
+        </a>
         <p className="last-updated-at">
           Last updated at {lastUpdatedAt.toFormat(DATE_FORMAT)}
         </p>
@@ -101,17 +101,25 @@ const SupermarketInfo = memo((props: Props) => {
           margin-bottom: 1em;
         }
         .title {
-          margin: 0;
+          margin: 0 0 0.2em;
           grid-area: title;
         }
+        .address {
+          font-style: italic;
+          margin: 0 0 0.5em;
+          grid-area: address;
+        }
         .open-store {
-          display: inline-block;
+          grid-area: open-store;
+          margin: 0 0 0.5em;
+          display: block;
+          text-align: center;
           color: #17c0eb;
-          font-size: 0.6em;
-          border: 1px solid #18dcff;
+          font-size: 1em;
+          border: 3px solid #18dcff;
           border-radius: 4px;
           padding: 0.2em 0.4em;
-          margin-left: 1em;
+          font-weight: bold;
         }
         .open-store:focus {
           background: none;
@@ -130,28 +138,22 @@ const SupermarketInfo = memo((props: Props) => {
           background: #7d5fff;
           color: #fff;
         }
-        .address {
-          margin: 0;
-          grid-area: address;
-        }
         .last-updated-at {
           grid-area: last-updated-at;
           margin: 0;
           text-align: center;
           align-self: center;
           font-size: 0.8em;
-          font-style: italic;
-          border: 3px solid #eee;
+          background: rgba(0, 0, 0, 0.04);
           padding: 0.5em 1em;
           border-radius: 4px;
-          margin-top: 1em;
         }
 
         @media only screen and (min-width: 500px) {
           .header {
             display: grid;
             grid-template-areas:
-              'title last-updated-at'
+              'title open-store'
               'address last-updated-at';
             grid-template-columns: 1fr auto;
           }

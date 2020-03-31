@@ -45,7 +45,7 @@ const App = () => {
         />
         <link
           rel="stylesheet"
-          href="//brick.freetls.fastly.net/Source+Sans+Pro:400,700"
+          href="//brick.freetls.fastly.net/Source+Sans+Pro:400,400i,700"
         />
         <link
           rel="icon"
@@ -70,7 +70,6 @@ const App = () => {
           >
             Feedback
           </a>
-          {' | '}
           <a
             target="_blank"
             href="https://github.com/stayradiated/clickandcollect.nz"
@@ -117,11 +116,14 @@ const App = () => {
           justify-content: flex-start;
         }
         footer {
-          text-align: right;
-          margin: 1em 0.5em;
+          border-top: 1px solid #eee;
+          display: flex;
+          justify-content: flex-end;
         }
         footer a {
-          margin: 0 0.5em;
+          display: block;
+          border-left: 1px solid #eee;
+          padding: 1em 2em;
         }
         @media only screen and (min-width: 500px) {
           main {

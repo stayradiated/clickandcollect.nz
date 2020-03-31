@@ -70,10 +70,14 @@ const SupermarketList = memo((props: Props) => {
   const [debouncedCallback] = useDebouncedCallback(
     (query) => {
       setSearch(performSearch(query, supermarkets))
+
+      const slug = first(router.query.slug)
+      const hasSlug = slug?.trim().length > 0
+
       router.replace(
-        '/[slug]',
+        hasSlug ? '/[slug]' : '/',
         {
-          pathname: `/${router.query.slug}`,
+          pathname: hasSlug ? `/${slug}` : '/',
           query: { q: query },
         },
         { shallow: true },
@@ -136,6 +140,7 @@ const SupermarketList = memo((props: Props) => {
           display: flex;
           flex-direction: column;
           background: #222;
+          width: 100%;
         }
         .input {
           margin: 1em;
@@ -178,6 +183,7 @@ const SupermarketList = memo((props: Props) => {
           display: block;
           border-radius: 4px;
           width: 2.5em;
+          height: 2em;
           margin-right: 1em;
           font-size: 0.75em;
           text-align: center;
@@ -209,6 +215,7 @@ const SupermarketList = memo((props: Props) => {
         }
         .available {
           font-weight: bold;
+          margin-left: 1em;
         }
         .unavailable .available {
           color: rgba(255, 255, 255, 0.5);
