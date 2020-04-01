@@ -31,8 +31,6 @@ const App = () => {
   const storeSlug = first(router.query.s)
   const supermarket = supermarkets.find((s) => buildSlug(s) === storeSlug)
 
-  console.log(router.query)
-
   const title = supermarket
     ? `${supermarket.chain} ${supermarket.name} - Click & Collect`
     : `Click & Collect`
