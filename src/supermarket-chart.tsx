@@ -128,8 +128,19 @@ const SupermarketChart = memo((props: Props) => {
               axis="axis"
               event={state.trackerEvent}
               info={[{ label: 'Available', value: state.trackerValue }]}
+              infoTimeFormat="%x %X"
               infoWidth={120}
               markerRadius={2}
+
+              infoStyle={{
+                box: {
+                  fill: '#f0f0f0', stroke: 'none', opacity: 1
+                },
+                label: {
+                  fill: '#333', opacity: 1
+                }
+              }}
+              stemStyle={{ stroke: '#3d3d3d' }}
               markerStyle={{ fill: '#3d3d3d' }}
             />
           </Charts>
