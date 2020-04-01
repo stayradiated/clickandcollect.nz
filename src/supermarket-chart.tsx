@@ -1,44 +1,74 @@
-import { DateTime } from 'luxon'
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback } from 'react'
 import {
+  ResponsiveContainer,
   AreaChart,
-  ScatterChart,
-  Baseline,
-  ChartContainer,
-  ChartRow,
-  Charts,
-  EventMarker,
-  Resizable,
+  Area,
+  XAxis,
   YAxis,
-} from 'react-timeseries-charts'
-import { TimeSeries, TimeRange } from 'pondjs'
+  CartesianGrid,
+  Tooltip,
+} from 'recharts'
+import { DateTime } from 'luxon'
 
 import { Snapshot } from './types'
 import { toSum } from './utils'
 
 interface Props {
   snapshots: Snapshot[],
-  onTrack: (time: Date) => void,
+  onTrack: (timestamp: number) => void,
 }
 
 const buildTimeSeries = (snapshots: Snapshot[]) => {
-  const points = snapshots
+  const data = snapshots
     .map((snapshot) => {
       const date = DateTime.fromISO(snapshot.date)
       const sum = Object.values(snapshot.slots).reduce<number>(toSum, 0)
-      return [date.toMillis(), sum]
+
+      return {
+        index: Math.floor(date.toMillis()),
+        available: sum,
+      }
     })
     .sort((a, b) => {
-      return a[0] - b[0]
+      return a.index - b.index
     })
 
-  const timeSeries = new TimeSeries({
-    name: 'snapshots',
-    columns: ['time', 'value'],
-    points,
-  })
+  const min = data[0].index
+  const max = data[data.length - 1].index
+  const ticks = [min]
+  for (let i = min; i < max; i += 60 * 60 * 3) {
+    const tickTime = DateTime.fromMillis(i)
+      .set({ minute: 0, second: 0 })
+      .toMillis()
+    if (tickTime > min) {
+      ticks.push(tickTime)
+    }
+  }
 
-  return timeSeries
+  return { data, ticks }
+}
+
+const formatMillisAsTime = (millis: number) => {
+  const datetime = DateTime.fromMillis(millis)
+  return datetime.toFormat('h:mm a')
+}
+
+const formatMillisAsDateTime = (millis: number) => {
+  const datetime = DateTime.fromMillis(millis)
+  return datetime.toFormat('d LLL, h:mm a')
+}
+
+const XAxisTick = (props) => {
+  const { x, y, stroke, payload } = props
+  const text = formatMillisAsTime(payload.value)
+
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text x={0} y={0} dy={16} textAnchor="middle" fill="#666">
+        {text}
+      </text>
+    </g>
+  )
 }
 
 const SupermarketChart = memo((props: Props) => {
@@ -48,105 +78,64 @@ const SupermarketChart = memo((props: Props) => {
     return <div>Loading...</div>
   }
 
-  const timeSeries = buildTimeSeries(snapshots)
+  const { data, ticks } = buildTimeSeries(snapshots)
 
-  const [state, setState] = useState({
-    trackerValue: '0',
-    trackerEvent: null,
-  })
-
-  const handleTrackerChanged = useCallback(
-    (t) => {
-      if (t) {
-        const e = timeSeries.atTime(t)
-        const eventValue = e.get('value').toString()
-        setState({ trackerValue: eventValue, trackerEvent: e })
-
-        const eventTime = new Date(
-          e.begin().getTime() + (e.end().getTime() - e.begin().getTime()) / 2,
-        )
-        onTrack(eventTime)
-      } else {
-        setState({ trackerValue: null, trackerEvent: null })
-        onTrack(null)
-      }
+  const handleMouseMove = useCallback(
+    (event) => {
+      const { activeLabel } = event
+      onTrack(activeLabel)
     },
-    [timeSeries, onTrack],
+    [onTrack],
   )
 
-  return (
-    <Resizable>
-      <ChartContainer
-        timeRange={timeSeries.timerange()}
-        onTrackerChanged={handleTrackerChanged}
-      >
-        <ChartRow height="200">
-          <YAxis
-            id="axis"
-            label="# Available Slots"
-            min={0}
-            max={timeSeries.max(undefined) + 20}
-            width="60"
-            format=".0f"
-          />
-          <Charts>
-            <Baseline axis="axis" value={0} />
-            <AreaChart
-              axis="axis"
-              series={timeSeries}
-              interpolation="curveLinear"
-              style={{
-                value: {
-                  line: {
-                    normal: {
-                      strokeWidth: 0,
-                    },
-                  },
-                  area: {
-                    normal: {
-                      fill: '#18dcff',
-                      stroke: 'none',
-                      opacity: 0.5,
-                    },
-                  },
-                },
-              }}
-            />
-            <ScatterChart
-              axis="axis"
-              series={timeSeries}
-              style={{
-                value: {
-                  normal: {
-                    fill: '#7158e2',
-                  },
-                },
-              }}
-            />
-            <EventMarker
-              type="flag"
-              axis="axis"
-              event={state.trackerEvent}
-              info={[{ label: 'Available', value: state.trackerValue }]}
-              infoTimeFormat="%d/%m/%Y %X"
-              infoWidth={120}
-              markerRadius={2}
+  const handleMouseLeave = useCallback(() => {
+    onTrack(null)
+  }, [onTrack])
 
-              infoStyle={{
-                box: {
-                  fill: '#f0f0f0', stroke: 'none', opacity: 1
-                },
-                label: {
-                  fill: '#333', opacity: 1
-                }
-              }}
-              stemStyle={{ stroke: '#3d3d3d' }}
-              markerStyle={{ fill: '#3d3d3d' }}
-            />
-          </Charts>
-        </ChartRow>
-      </ChartContainer>
-    </Resizable>
+  return (
+    <ResponsiveContainer width="100%" height={200}>
+      <AreaChart
+        data={data}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        margin={{ right: 0, bottom: 0, left: 0, top: 0 }}
+      >
+        <defs>
+          <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#18dcff" stopOpacity={1} />
+            <stop offset="100%" stopColor="#18dcff" stopOpacity={0.5} />
+          </linearGradient>
+        </defs>
+
+        <XAxis
+          ticks={ticks}
+          tick={XAxisTick}
+          dataKey="index"
+          name="Time"
+          type="number"
+          domain={['dataMin', 'dataMax']}
+        />
+
+        <YAxis allowDecimals={false} domain={[0, 'dataMax + 1']} />
+
+        <CartesianGrid strokeDasharray="3 3" />
+
+        <Tooltip
+          labelFormatter={formatMillisAsDateTime}
+          isAnimationActive={false}
+        />
+        <Area
+          dot={{ strokeWidth: 0, fill: '#7158e2', r: 2 }}
+          type="monotone"
+          dataKey="available"
+          stroke="#8884d8"
+          fillOpacity={1}
+          fill="url(#gradient)"
+          animationDuration={300}
+          isAnimationActive={false}
+        />
+      </AreaChart>
+    </ResponsiveContainer>
   )
 })
 

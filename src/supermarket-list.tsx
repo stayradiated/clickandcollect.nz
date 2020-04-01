@@ -62,7 +62,6 @@ const SupermarketList = memo((props: Props) => {
 
   useEffect(() => {
     if (initialQuery != null) {
-      console.log({ initialQuery })
       setSearch(performSearch(initialQuery, supermarkets))
     }
   }, [initialQuery])
