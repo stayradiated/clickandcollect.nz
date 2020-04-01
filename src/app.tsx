@@ -9,6 +9,7 @@ import SupermarketInfo from './supermarket-info'
 
 import { Supermarket } from './types'
 import { first, buildSlug } from './utils'
+import { API_ENDPOINT } from './constants'
 
 const fetcher = (url) => fetch(url).then((r) => r.json())
 
@@ -16,7 +17,7 @@ const App = () => {
   const router = useRouter()
 
   const { data: supermarkets, error } = useSWR<Supermarket[]>(
-    'https://api.clickandcollect.nz/supermarkets.json',
+    `${API_ENDPOINT}/supermarkets.json`,
     fetcher,
   )
 

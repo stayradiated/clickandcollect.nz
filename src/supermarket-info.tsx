@@ -7,6 +7,7 @@ import Calendar from './calendar'
 import SupermarketChart from './supermarket-chart'
 
 import { Snapshot, Supermarket } from './types'
+import { API_ENDPOINT } from './constants'
 
 interface Props {
   supermarket: Supermarket,
@@ -41,7 +42,7 @@ const SupermarketInfo = memo((props: Props) => {
   const { supermarket } = props
 
   const { data } = useSWR<Snapshot[]>(
-    `https://api.clickandcollect.nz/slots/${supermarket?.id}.json`,
+    `${API_ENDPOINT}/slots/${supermarket?.id}.json`,
     fetcher,
   )
 
