@@ -34,7 +34,8 @@ const Calendar = memo((props: Props) => {
 
   const cells = dates.map((date) => {
     const key = date.toISODate()
-    const available = (snapshot || supermarket.latestSnapshot).slots[key] ?? -1
+    const slots = (snapshot || supermarket.latestSnapshot)?.slots
+    const available = (slots && slots[key]) ?? -1
     return <CalendarCell key={key} date={date} available={available} />
   })
 

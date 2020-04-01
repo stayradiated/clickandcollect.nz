@@ -8,7 +8,7 @@ import SupermarketList from './supermarket-list'
 import SupermarketInfo from './supermarket-info'
 
 import { Supermarket } from './types'
-import { buildSlug } from './utils'
+import { first, buildSlug } from './utils'
 
 const fetcher = (url) => fetch(url).then((r) => r.json())
 
@@ -28,7 +28,7 @@ const App = () => {
     return <div>{error.message}</div>
   }
 
-  const { slug } = router.query
+  const slug = first(router.query.slug)
   const supermarket = supermarkets.find((s) => buildSlug(s) === slug)
 
   const title = supermarket

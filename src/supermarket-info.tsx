@@ -48,12 +48,8 @@ const SupermarketInfo = memo((props: Props) => {
   const [trackedDate, setTrackedDate] = useState(null)
 
   const handleTrack = useCallback(
-    (date) => {
-      if (date == null) {
-        setTrackedDate(null)
-      } else {
-        setTrackedDate(date.getTime())
-      }
+    (timestamp) => {
+      setTrackedDate(timestamp)
     },
     [setTrackedDate],
   )
@@ -62,9 +58,8 @@ const SupermarketInfo = memo((props: Props) => {
     return new Date(snapshot.date).getTime() === trackedDate
   })
 
-  const lastUpdatedAt = DateTime.fromISO(
-    (data && data[0]?.date) || supermarket.latestSnapshot.date,
-  )
+  const lastUpdatedAt =
+    (data && data[0]?.date) || supermarket.latestSnapshot?.date
 
   return (
     <div className="container">
@@ -80,9 +75,12 @@ const SupermarketInfo = memo((props: Props) => {
         >
           Shop Online
         </a>
-        <p className="last-updated-at">
-          Last updated at {lastUpdatedAt.toFormat(DATE_FORMAT)}
-        </p>
+        {lastUpdatedAt && (
+          <p className="last-updated-at">
+            Last updated at{' '}
+            {DateTime.fromISO(lastUpdatedAt).toFormat(DATE_FORMAT)}
+          </p>
+        )}
       </header>
 
       <Calendar supermarket={supermarket} snapshot={snapshot} />
