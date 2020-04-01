@@ -15,6 +15,9 @@ This website tracks and displays the available timeslots across hundreds of
 supermarkets, helping you to find which supermarkets have the most
 availability and to find the best time to order your groceries.
 
+If you are interested in how I built this, I wrote [a short article about it on
+my blog](https://george.czabania.com/2020_03_31/).
+
 ## What supermarkets do you display?
 
 The website currently tracks four chains of supermarkets:
@@ -41,6 +44,6 @@ of the site.
 This source code of this website is available under the MIT license.
 
 The code for the scraping mechanism has not been published. If you are
-interested in the data, you can find a regularly updated snapshot at
+interested in the data, you can find a regularly updated snapshot at the
 [clickandcollect.nz.api
 repository](https://github.com/stayradiated/clickandcollect.nz.api).
