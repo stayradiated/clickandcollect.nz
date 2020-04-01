@@ -69,16 +69,15 @@ const SupermarketList = memo((props: Props) => {
   const [debouncedCallback] = useDebouncedCallback(
     (query) => {
       setSearch(performSearch(query, supermarkets))
-
-      const slug = first(router.query.slug)
-      const hasSlug = slug?.trim().length > 0
-
       router.replace(
-        hasSlug ? '/[...slug]' : '/',
         {
-          pathname: hasSlug ? `/${slug}` : '/',
-          query: { q: query },
+          pathname: '/',
+          query: {
+            ...router.query,
+            q: query,
+          },
         },
+        undefined,
         { shallow: true },
       )
     },
@@ -116,10 +115,12 @@ const SupermarketList = memo((props: Props) => {
               })}
             >
               <Link
-                href="/[...slug]"
-                as={{
-                  pathname: `/${buildSlug(supermarket)}`,
-                  query,
+                href={{
+                  pathname: '/',
+                  query: {
+                    ...query,
+                    s: buildSlug(supermarket),
+                  },
                 }}
                 passHref
               >

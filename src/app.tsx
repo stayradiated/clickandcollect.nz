@@ -13,12 +13,12 @@ import { first, buildSlug } from './utils'
 const fetcher = (url) => fetch(url).then((r) => r.json())
 
 const App = () => {
+  const router = useRouter()
+
   const { data: supermarkets, error } = useSWR<Supermarket[]>(
     'https://api.clickandcollect.nz/supermarkets.json',
     fetcher,
   )
-
-  const router = useRouter()
 
   if (supermarkets == null) {
     return <div>Loading...</div>
@@ -28,8 +28,8 @@ const App = () => {
     return <div>{error.message}</div>
   }
 
-  const slug = first(router.query.slug)
-  const supermarket = supermarkets.find((s) => buildSlug(s) === slug)
+  const storeSlug = first(router.query.s)
+  const supermarket = supermarkets.find((s) => buildSlug(s) === storeSlug)
 
   const title = supermarket
     ? `${supermarket.chain} ${supermarket.name} - Click & Collect`
