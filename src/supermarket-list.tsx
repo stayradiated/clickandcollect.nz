@@ -74,7 +74,7 @@ const SupermarketList = memo((props: Props) => {
       const hasSlug = slug?.trim().length > 0
 
       router.replace(
-        hasSlug ? '/[slug]' : '/',
+        hasSlug ? '/[...slug]' : '/',
         {
           pathname: hasSlug ? `/${slug}` : '/',
           query: { q: query },
@@ -116,7 +116,7 @@ const SupermarketList = memo((props: Props) => {
               })}
             >
               <Link
-                href="/[slug]"
+                href="/[...slug]"
                 as={{
                   pathname: `/${buildSlug(supermarket)}`,
                   query,
