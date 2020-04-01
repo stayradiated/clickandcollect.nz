@@ -128,7 +128,7 @@ const SupermarketChart = memo((props: Props) => {
               axis="axis"
               event={state.trackerEvent}
               info={[{ label: 'Available', value: state.trackerValue }]}
-              infoTimeFormat="%x %X"
+              infoTimeFormat="%d/%m/%Y %X"
               infoWidth={120}
               markerRadius={2}
 
