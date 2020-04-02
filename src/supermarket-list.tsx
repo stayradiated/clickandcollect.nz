@@ -200,7 +200,7 @@ const SupermarketList = memo((props: Props) => {
           color: #fff;
         }
         .list-item.freshchoice .list-item-link:before {
-          content: 'FS';
+          content: 'FC';
           background: #3bbdef;
           color: #fff;
         }
