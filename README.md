@@ -1,5 +1,7 @@
 # [clickandcollect.nz](https://clickandcollect.nz)
 
+![screenshot](./screenshot.png)
+
 ## What is this for?
 
 Many supermarkets in New Zealand offer a "Click & Collect" service, which you
