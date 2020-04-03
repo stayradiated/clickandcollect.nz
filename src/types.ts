@@ -3,6 +3,7 @@ export interface Supermarket {
   chain: string,
   name: string,
   address: string,
+  region: string,
   latestSnapshot: {
     date: string,
     slots: Record<string, number>,
