@@ -18,7 +18,7 @@
     "react-dom": "16.13.1",
     "recharts": "1.8.5",
     "swr": "0.2.0",
-    "use-debounce": "3.4.0"
+    "use-debounce": "3.4.1"
   },
   "devDependencies": {
     "@stayradiated/pkg": "4.3.0",

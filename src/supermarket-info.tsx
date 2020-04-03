@@ -41,10 +41,16 @@ const getSupermarketLink = (supermarket: Supermarket) => {
 const SupermarketInfo = memo((props: Props) => {
   const { supermarket } = props
 
-  const { data } = useSWR<Snapshot[]>(
+  const { data, error } = useSWR<Snapshot[]>(
     `${API_ENDPOINT}/slots/${supermarket?.id}.json`,
     fetcher,
   )
+
+  const isLoading = data == null
+
+  if (error != null) {
+    console.error(error)
+  }
 
   const [trackedDate, setTrackedDate] = useState(null)
 
@@ -88,7 +94,11 @@ const SupermarketInfo = memo((props: Props) => {
 
       <h4>Last 24 Hours</h4>
 
-      <SupermarketChart snapshots={data || []} onTrack={handleTrack} />
+      <SupermarketChart
+        isLoading={isLoading}
+        snapshots={data || []}
+        onTrack={handleTrack}
+      />
 
       <style jsx>{`
         .container {
