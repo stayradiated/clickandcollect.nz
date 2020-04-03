@@ -16,18 +16,17 @@ const fetcher = (url) => fetch(url).then((r) => r.json())
 const App = () => {
   const router = useRouter()
 
-  const { data: supermarkets, error } = useSWR<Supermarket[]>(
+  const { data, error } = useSWR<Supermarket[]>(
     `${API_ENDPOINT}/supermarkets.json`,
     fetcher,
   )
 
-  if (supermarkets == null) {
-    return <div>Loading...</div>
+  if (error != null) {
+    console.error(error)
   }
 
-  if (error != null) {
-    return <div>{error.message}</div>
-  }
+  const isLoading = data == null
+  const supermarkets = data || []
 
   const storeSlug = first(router.query.s)
   const supermarket = supermarkets.find((s) => buildSlug(s) === storeSlug)
@@ -41,14 +40,6 @@ const App = () => {
       <Head>
         <title>{title}</title>
         <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/kognise/water.css@latest/dist/light.min.css"
-        />
-        <link
-          rel="stylesheet"
-          href="//brick.freetls.fastly.net/Source+Sans+Pro:400,400i,700"
-        />
-        <link
           rel="icon"
           type="image/png"
           sizes="32x32"
@@ -61,7 +52,7 @@ const App = () => {
           href="/favicon-16x16.png"
         />
       </Head>
-      <SupermarketList supermarkets={supermarkets} />
+      <SupermarketList isLoading={isLoading} supermarkets={supermarkets} />
       <main className={classNames({ selected: supermarket != null })}>
         {supermarket && <SupermarketInfo supermarket={supermarket} />}
         <footer>

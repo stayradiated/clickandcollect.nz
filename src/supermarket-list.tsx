@@ -6,8 +6,10 @@ import classNames from 'classnames'
 
 import { Supermarket } from './types'
 import { toSum, first, buildSlug } from './utils'
+import Spinner from './spinner'
 
 interface Props {
+  isLoading: boolean,
   supermarkets: Supermarket[],
 }
 
@@ -61,7 +63,7 @@ const performSearch = (
 }
 
 const SupermarketList = memo((props: Props) => {
-  const { supermarkets } = props
+  const { isLoading, supermarkets } = props
 
   const router = useRouter()
   const initialQuery = first(router.query.q)
@@ -72,13 +74,17 @@ const SupermarketList = memo((props: Props) => {
   })
 
   useEffect(() => {
+    setSearch({ ...search, results: supermarkets })
+  }, [supermarkets])
+
+  useEffect(() => {
     if (initialQuery != null) {
       setSearch(performSearch(initialQuery, supermarkets))
     }
   }, [initialQuery])
 
   const [debouncedCallback] = useDebouncedCallback(
-    (query) => {
+    (query: string) => {
       setSearch(performSearch(query, supermarkets))
       router.replace(
         {
@@ -105,7 +111,8 @@ const SupermarketList = memo((props: Props) => {
         placeholder="Search supermarkets..."
         onChange={(e) => debouncedCallback(e.target.value)}
       />
-      <ul className="list">
+      <ul className={classNames('list', { loading: isLoading })}>
+        {isLoading && <Spinner />}
         {search.results.map((supermarket, index) => {
           const previousResult = search.results[index - 1]
           const previousRegion = previousResult?.region
@@ -169,10 +176,20 @@ const SupermarketList = memo((props: Props) => {
           margin: 1em;
         }
         .list {
+          flex: 1;
           overflow-y: auto;
           padding: 0;
           margin: 0;
         }
+        .list.loading {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .list.loading > li {
+          display: none;
+        }
+
         .list-header {
           list-style: none;
           font-weight: bold;
