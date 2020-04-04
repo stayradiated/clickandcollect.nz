@@ -13,29 +13,14 @@ interface Props {
   supermarkets: Supermarket[],
 }
 
-interface Search {
-  query: string,
-  results: Supermarket[],
-}
-
 const DEBOUNCE_MS = 250
-
-const sortByRegion = (array: Supermarket[]): Supermarket[] => {
-  return array.sort((a, b) => {
-    return (
-      a.region.localeCompare(b.region) ||
-      a.chain.localeCompare(b.chain) ||
-      a.name.localeCompare(b.name)
-    )
-  })
-}
 
 const performSearch = (
   rawQuery: string,
   supermarkets: Supermarket[],
-): Search => {
+): Supermarket[] => {
   if (typeof rawQuery !== 'string' || rawQuery.trim().length === 0) {
-    return { query: rawQuery, results: supermarkets }
+    return supermarkets
   }
 
   const words = rawQuery
@@ -56,10 +41,7 @@ const performSearch = (
     })
   })
 
-  return {
-    query: rawQuery,
-    results: sortByRegion(results),
-  }
+  return results
 }
 
 const SupermarketList = memo((props: Props) => {
@@ -68,39 +50,36 @@ const SupermarketList = memo((props: Props) => {
   const router = useRouter()
   const initialQuery = first(router.query.q)
 
-  const [search, setSearch] = useState<Search>({
-    query: initialQuery,
-    results: supermarkets,
-  })
+  const [searchQuery, setSearchQuery] = useState(initialQuery)
+  const [searchResults, setSearchResults] = useState(supermarkets)
 
   useEffect(() => {
-    setSearch({ ...search, results: supermarkets })
-  }, [supermarkets])
-
-  useEffect(() => {
-    if (initialQuery != null) {
-      setSearch(performSearch(initialQuery, supermarkets))
-    }
+    setSearchQuery(initialQuery)
   }, [initialQuery])
 
-  const [debouncedCallback] = useDebouncedCallback(
-    (query: string) => {
-      setSearch(performSearch(query, supermarkets))
-      router.replace(
-        {
-          pathname: '/',
-          query: {
-            ...router.query,
-            q: query,
-          },
-        },
-        undefined,
-        { shallow: true },
-      )
-    },
-    DEBOUNCE_MS,
-    { maxWait: 4 * DEBOUNCE_MS },
-  )
+  useEffect(() => {
+    setSearchResults(performSearch(searchQuery, supermarkets))
+  }, [searchQuery, supermarkets])
+
+  const [debouncedCallback] = useDebouncedCallback((query: string) => {
+    setSearchQuery(query)
+
+    const nextRouterQuery = { ...router.query }
+    if (query.trim().length > 0) {
+      nextRouterQuery.q = query
+    } else {
+      delete nextRouterQuery.q
+    }
+
+    router.replace(
+      {
+        pathname: '/',
+        query: nextRouterQuery,
+      },
+      undefined,
+      { shallow: true },
+    )
+  }, DEBOUNCE_MS)
 
   return (
     <div className="container">
@@ -113,8 +92,8 @@ const SupermarketList = memo((props: Props) => {
       />
       <ul className={classNames('list', { loading: isLoading })}>
         {isLoading && <Spinner />}
-        {search.results.map((supermarket, index) => {
-          const previousResult = search.results[index - 1]
+        {searchResults.map((supermarket, index) => {
+          const previousResult = searchResults[index - 1]
           const previousRegion = previousResult?.region
 
           const { region } = supermarket
@@ -127,7 +106,7 @@ const SupermarketList = memo((props: Props) => {
                 0,
               )
 
-          const query = search.query ? { q: search.query } : {}
+          const query = searchQuery ? { q: searchQuery } : {}
 
           return [
             region !== previousRegion && (
