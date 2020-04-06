@@ -5568,6 +5568,11 @@ react-dom@16.13.1:
     prop-types "^15.6.2"
     scheduler "^0.19.1"
 
+react-entypo-icons@1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/react-entypo-icons/-/react-entypo-icons-1.4.1.tgz#f7403adeb36d9b2b7e66c6dca7e6ad5baee1fd95"
+  integrity sha512-XaFvXW1SqymEn3+rdxHsdoKXeHBjM3BOI1N5gDSyedmy+wGUPeyzDDV0PCS8f8V8d1GWJAwb+0rydfi61aR6wQ==
+
 react-is@16.8.6:
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.8.6.tgz#5bbc1e2d29141c9fbdfed456343fe2bc430a6a16"
