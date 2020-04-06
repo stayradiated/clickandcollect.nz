@@ -5,6 +5,9 @@ import { useRouter } from 'next/router'
 import classNames from 'classnames'
 import { useSessionStorage } from 'react-use'
 
+import EntypoLocationPin from 'react-entypo-icons/lib/entypo/LocationPin';
+import EntypoSelectArrows from 'react-entypo-icons/lib/entypo/SelectArrows';
+
 import { Coords, Supermarket } from './types'
 import { toSum, first, buildSlug, sortSupermarketsByDistance } from './utils'
 import Spinner from './spinner'
@@ -67,14 +70,18 @@ const SupermarketList = memo((props: Props) => {
     true,
   )
 
-  const { latitude, longitude, error: geolocationError } = useGeolocation(sortBy === SORT_BY.LOCATION, {
-    enableHighAccuracy: false,
-  })
+  const { latitude, longitude, error: geolocationError } = useGeolocation(
+    sortBy === SORT_BY.LOCATION,
+    {
+      enableHighAccuracy: false,
+    },
+  )
   if (geolocationError != null) {
     console.error(geolocationError)
   }
 
-  const geolocation: Coords = (latitude == null || longitude == null) ? null : [latitude, longitude]
+  const geolocation: Coords =
+    latitude == null || longitude == null ? null : [latitude, longitude]
 
   const router = useRouter()
   const initialQuery = first(router.query.q)
@@ -136,13 +143,18 @@ const SupermarketList = memo((props: Props) => {
         {isLoading && <Spinner />}
         {isLoading === false && (
           <li className="sort-by">
-            <label className="sort-by-label">Sort By</label>
             <button
               className={classNames('sort-by-button', {
                 'sort-by-button-active': sortBy === SORT_BY.NAME,
               })}
               onClick={handleSortByName}
             >
+              <EntypoSelectArrows
+                style={{
+                  height: '1.2em',
+                  width: '1.2em',
+                }}
+              />{' '}
               A-Z
             </button>
             <button
@@ -151,6 +163,12 @@ const SupermarketList = memo((props: Props) => {
               })}
               onClick={handleSortByLocation}
             >
+              <EntypoLocationPin
+                style={{
+                  height: '1.2em',
+                  width: '1.2em',
+                }}
+              />
               Location
             </button>
           </li>
@@ -221,30 +239,41 @@ const SupermarketList = memo((props: Props) => {
 
         .sort-by {
           margin: 0 1em 1em;
-        }
-        .sort-by-label {
-          margin-right: 1em;
-          font-weight: bold;
-          color: #aaa;
-          text-transform: uppercase;
-          font-size: 0.8em;
+          list-style: none;
+          display: flex;
+          justify-content: center;
         }
         .sort-by-button {
-          background: #555;
+          background: #222;
           color: #fff;
           border-radius: 0;
           margin: 0;
           border: 1px solid #777;
           font-size: 0.8em;
           font-weight: bold;
+          transition: background 300ms ease;
+          padding: 0 2em;
+          line-height: 3em;
         }
-        .sort-by-button-active {
-          background: #ccc;
-          color: #333;
+        .sort-by-button:hover {
+          background: #333;
+        }
+        .sort-by-button-active,
+        .sort-by-button-active:hover,
+        .sort-by-button:focus {
+          outline: none;
+          box-shadow: none;
+          background: #555;
+        }
+        .sort-by-button:focus {
+          text-decoration: underline;
+        }
+        .sort-by-button::-moz-focus-inner {
+          border: 0;
         }
         .sort-by-button:first-of-type {
           border-radius: 4px 0 0 4px;
-          border-right: none;
+          margin-right: -1px;
         }
         .sort-by-button:last-of-type {
           border-radius: 0 4px 4px 0;
