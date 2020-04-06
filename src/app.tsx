@@ -108,6 +108,7 @@ const App = () => {
           justify-content: flex-start;
         }
         footer {
+          padding: 0;
           border-top: 1px solid #eee;
           display: flex;
           justify-content: flex-end;
