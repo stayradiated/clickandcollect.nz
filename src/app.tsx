@@ -4,12 +4,11 @@ import Head from 'next/head'
 import useSWR from 'swr'
 import fetch from 'isomorphic-unfetch'
 import classNames from 'classnames'
-import { useGeolocation } from 'react-use'
 
 import SupermarketList from './supermarket-list'
 import SupermarketInfo from './supermarket-info'
 
-import { Coords, Supermarket } from './types'
+import { Supermarket } from './types'
 import { first, buildSlug } from './utils'
 import { API_ENDPOINT } from './constants'
 
@@ -25,15 +24,6 @@ const App = () => {
   if (swrError != null) {
     console.error(swrError)
   }
-
-  const { latitude, longitude, error: geolocationError } = useGeolocation({
-    enableHighAccuracy: false,
-  })
-  if (geolocationError != null) {
-    console.error(geolocationError)
-  }
-
-  const geolocation: Coords = (latitude == null || longitude == null) ? null : [latitude, longitude]
 
   const isLoading = data == null
   const supermarkets = data || []
@@ -62,11 +52,7 @@ const App = () => {
           href="/favicon-16x16.png"
         />
       </Head>
-      <SupermarketList
-        geolocation={geolocation}
-        isLoading={isLoading}
-        supermarkets={supermarkets}
-      />
+      <SupermarketList isLoading={isLoading} supermarkets={supermarkets} />
       <main className={classNames({ selected: supermarket != null })}>
         {supermarket && <SupermarketInfo supermarket={supermarket} />}
         <footer>
