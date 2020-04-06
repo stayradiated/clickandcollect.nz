@@ -67,18 +67,14 @@ const SupermarketList = memo((props: Props) => {
     true,
   )
 
-  const { latitude, longitude, error: geolocationError } = useGeolocation(
-    sortBy === SORT_BY.LOCATION,
-    {
-      enableHighAccuracy: false,
-    },
-  )
+  const { latitude, longitude, error: geolocationError } = useGeolocation(sortBy === SORT_BY.LOCATION, {
+    enableHighAccuracy: false,
+  })
   if (geolocationError != null) {
     console.error(geolocationError)
   }
 
-  const geolocation: Coords =
-    latitude == null || longitude == null ? null : [latitude, longitude]
+  const geolocation: Coords = (latitude == null || longitude == null) ? null : [latitude, longitude]
 
   const router = useRouter()
   const initialQuery = first(router.query.q)
@@ -309,7 +305,6 @@ const SupermarketList = memo((props: Props) => {
         .list-item-link:hover {
           text-decoration: none;
         }
-        .list-item-link:active,
         .list-item-link:focus {
           outline: none;
           background: #eee;
