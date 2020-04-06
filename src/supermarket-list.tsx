@@ -241,7 +241,7 @@ const SupermarketList = memo((props: Props) => {
           font-size: 0.8em;
           font-weight: bold;
           transition: background 300ms ease;
-          padding: 0 2em;
+          padding: 0;
           line-height: 2.5em;
         }
         .sort-by-button:hover {
