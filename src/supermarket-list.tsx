@@ -1,26 +1,40 @@
-import { memo, useState, useEffect } from 'react'
+import { memo, useState, useEffect, useCallback } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import classNames from 'classnames'
+import { useSessionStorage } from 'react-use'
 
-import { Supermarket } from './types'
-import { toSum, first, buildSlug } from './utils'
+import { Coords, Supermarket } from './types'
+import { toSum, first, buildSlug, sortSupermarketsByDistance } from './utils'
 import Spinner from './spinner'
 
 interface Props {
   isLoading: boolean,
+  geolocation: Coords,
   supermarkets: Supermarket[],
 }
 
-const DEBOUNCE_MS = 250
+enum SORT_BY {
+  NAME = 'NAME',
+  LOCATION = 'LOCATION',
+}
+
+const SEARCH_DEBOUNCE_MS = 250
 
 const performSearch = (
   rawQuery: string,
   supermarkets: Supermarket[],
+  sortBy: SORT_BY,
+  geolocation: Coords,
 ): Supermarket[] => {
+  const sortedSupermarkets =
+    sortBy === SORT_BY.NAME
+      ? supermarkets
+      : sortSupermarketsByDistance(geolocation, supermarkets)
+
   if (typeof rawQuery !== 'string' || rawQuery.trim().length === 0) {
-    return supermarkets
+    return sortedSupermarkets
   }
 
   const words = rawQuery
@@ -29,7 +43,7 @@ const performSearch = (
     .split(' ')
     .map((word) => word.trim())
 
-  const results = supermarkets.filter((supermarket) => {
+  const filteredSupermarkets = sortedSupermarkets.filter((supermarket) => {
     const { chain, name, address, region } = supermarket
     return words.every((word) => {
       return (
@@ -41,25 +55,42 @@ const performSearch = (
     })
   })
 
-  return results
+  return filteredSupermarkets
 }
 
 const SupermarketList = memo((props: Props) => {
-  const { isLoading, supermarkets } = props
+  const { isLoading, geolocation, supermarkets } = props
 
   const router = useRouter()
   const initialQuery = first(router.query.q)
 
   const [searchQuery, setSearchQuery] = useState(initialQuery)
-  const [searchResults, setSearchResults] = useState(supermarkets)
+  const [sortBy, setSortBy] = useSessionStorage<SORT_BY>(
+    'sort_by',
+    SORT_BY.LOCATION,
+    true,
+  )
+
+  const [searchResults, setSearchResults] = useState(
+    performSearch(searchQuery, supermarkets, sortBy, geolocation),
+  )
 
   useEffect(() => {
     setSearchQuery(initialQuery)
   }, [initialQuery])
 
   useEffect(() => {
-    setSearchResults(performSearch(searchQuery, supermarkets))
-  }, [searchQuery, supermarkets])
+    setSearchResults(
+      performSearch(searchQuery, supermarkets, sortBy, geolocation),
+    )
+  }, [geolocation, sortBy, searchQuery, supermarkets])
+
+  const handleSortByLocation = useCallback(() => setSortBy(SORT_BY.LOCATION), [
+    setSortBy,
+  ])
+  const handleSortByName = useCallback(() => setSortBy(SORT_BY.NAME), [
+    setSortBy,
+  ])
 
   const [debouncedCallback] = useDebouncedCallback((query: string) => {
     setSearchQuery(query)
@@ -79,7 +110,7 @@ const SupermarketList = memo((props: Props) => {
       undefined,
       { shallow: true },
     )
-  }, DEBOUNCE_MS)
+  }, SEARCH_DEBOUNCE_MS)
 
   return (
     <div className="container">
@@ -88,10 +119,33 @@ const SupermarketList = memo((props: Props) => {
         type="search"
         defaultValue={initialQuery}
         placeholder="Search supermarkets..."
-        onChange={(e) => debouncedCallback(e.target.value)}
+        onKeyUp={(e) => debouncedCallback((e.target as any).value)}
       />
+
       <ul className={classNames('list', { loading: isLoading })}>
         {isLoading && <Spinner />}
+        {isLoading === false && (
+          <li className="sort-by">
+            <label className="sort-by-label">Sort By</label>
+            <button
+              className={classNames('sort-by-button', {
+                'sort-by-button-active': sortBy === SORT_BY.NAME,
+              })}
+              onClick={handleSortByName}
+            >
+              A-Z
+            </button>
+            <button
+              className={classNames('sort-by-button', {
+                'sort-by-button-active': sortBy === SORT_BY.LOCATION,
+              })}
+              onClick={handleSortByLocation}
+            >
+              Location
+            </button>
+          </li>
+        )}
+
         {searchResults.map((supermarket, index) => {
           const previousResult = searchResults[index - 1]
           const previousRegion = previousResult?.region
@@ -154,6 +208,38 @@ const SupermarketList = memo((props: Props) => {
         .input {
           margin: 1em;
         }
+
+        .sort-by {
+          margin: 0 1em 1em;
+        }
+        .sort-by-label {
+          margin-right: 1em;
+          font-weight: bold;
+          color: #aaa;
+          text-transform: uppercase;
+          font-size: 0.8em;
+        }
+        .sort-by-button {
+          background: #555;
+          color: #fff;
+          border-radius: 0;
+          margin: 0;
+          border: 1px solid #777;
+          font-size: 0.8em;
+          font-weight: bold;
+        }
+        .sort-by-button-active {
+          background: #ccc;
+          color: #333;
+        }
+        .sort-by-button:first-of-type {
+          border-radius: 4px 0 0 4px;
+          border-right: none;
+        }
+        .sort-by-button:last-of-type {
+          border-radius: 0 4px 4px 0;
+        }
+
         .list {
           flex: 1;
           overflow-y: auto;

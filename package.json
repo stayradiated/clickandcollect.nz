@@ -13,9 +13,11 @@
     "classnames": "2.2.6",
     "isomorphic-unfetch": "3.0.0",
     "luxon": "1.23.0",
+    "mem": "6.0.1",
     "next": "9.3.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
+    "react-use": "14.0.0",
     "recharts": "1.8.5",
     "swr": "0.2.0",
     "use-debounce": "3.4.1"
