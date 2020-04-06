@@ -8,10 +8,10 @@ import { useSessionStorage } from 'react-use'
 import { Coords, Supermarket } from './types'
 import { toSum, first, buildSlug, sortSupermarketsByDistance } from './utils'
 import Spinner from './spinner'
+import useGeolocation from './use-geolocation'
 
 interface Props {
   isLoading: boolean,
-  geolocation: Coords,
   supermarkets: Supermarket[],
 }
 
@@ -59,17 +59,31 @@ const performSearch = (
 }
 
 const SupermarketList = memo((props: Props) => {
-  const { isLoading, geolocation, supermarkets } = props
+  const { isLoading, supermarkets } = props
+
+  const [sortBy, setSortBy] = useSessionStorage<SORT_BY>(
+    'sort_by',
+    SORT_BY.NAME,
+    true,
+  )
+
+  const { latitude, longitude, error: geolocationError } = useGeolocation(
+    sortBy === SORT_BY.LOCATION,
+    {
+      enableHighAccuracy: false,
+    },
+  )
+  if (geolocationError != null) {
+    console.error(geolocationError)
+  }
+
+  const geolocation: Coords =
+    latitude == null || longitude == null ? null : [latitude, longitude]
 
   const router = useRouter()
   const initialQuery = first(router.query.q)
 
   const [searchQuery, setSearchQuery] = useState(initialQuery)
-  const [sortBy, setSortBy] = useSessionStorage<SORT_BY>(
-    'sort_by',
-    SORT_BY.LOCATION,
-    true,
-  )
 
   const [searchResults, setSearchResults] = useState(
     performSearch(searchQuery, supermarkets, sortBy, geolocation),
