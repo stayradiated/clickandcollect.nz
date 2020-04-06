@@ -5,8 +5,8 @@ import { useRouter } from 'next/router'
 import classNames from 'classnames'
 import { useSessionStorage } from 'react-use'
 
-import EntypoLocationPin from 'react-entypo-icons/lib/entypo/LocationPin';
-import EntypoSelectArrows from 'react-entypo-icons/lib/entypo/SelectArrows';
+import EntypoLocationPin from 'react-entypo-icons/lib/entypo/LocationPin'
+import EntypoSelectArrows from 'react-entypo-icons/lib/entypo/SelectArrows'
 
 import { Coords, Supermarket } from './types'
 import { toSum, first, buildSlug, sortSupermarketsByDistance } from './utils'
@@ -64,27 +64,15 @@ const performSearch = (
 const SupermarketList = memo((props: Props) => {
   const { isLoading, supermarkets } = props
 
+  const router = useRouter()
+  const initialQuery = first(router.query.q)
+
   const [sortBy, setSortBy] = useSessionStorage<SORT_BY>(
     'sort_by',
     SORT_BY.NAME,
     true,
   )
-
-  const { latitude, longitude, error: geolocationError } = useGeolocation(
-    sortBy === SORT_BY.LOCATION,
-    {
-      enableHighAccuracy: false,
-    },
-  )
-  if (geolocationError != null) {
-    console.error(geolocationError)
-  }
-
-  const geolocation: Coords =
-    latitude == null || longitude == null ? null : [latitude, longitude]
-
-  const router = useRouter()
-  const initialQuery = first(router.query.q)
+  const geolocation = useGeolocation(sortBy === SORT_BY.LOCATION)
 
   const [searchQuery, setSearchQuery] = useState(initialQuery)
 
@@ -100,7 +88,7 @@ const SupermarketList = memo((props: Props) => {
     setSearchResults(
       performSearch(searchQuery, supermarkets, sortBy, geolocation),
     )
-  }, [geolocation, sortBy, searchQuery, supermarkets])
+  }, [JSON.stringify(geolocation), sortBy, searchQuery, supermarkets])
 
   const handleSortByLocation = useCallback(() => setSortBy(SORT_BY.LOCATION), [
     setSortBy,
@@ -155,7 +143,7 @@ const SupermarketList = memo((props: Props) => {
                   width: '1.2em',
                 }}
               />{' '}
-              A-Z
+              Sort by Name
             </button>
             <button
               className={classNames('sort-by-button', {
@@ -169,7 +157,7 @@ const SupermarketList = memo((props: Props) => {
                   width: '1.2em',
                 }}
               />
-              Location
+              Stores Near You
             </button>
           </li>
         )}
@@ -244,6 +232,7 @@ const SupermarketList = memo((props: Props) => {
           justify-content: center;
         }
         .sort-by-button {
+          flex: 1;
           background: #222;
           color: #fff;
           border-radius: 0;
@@ -253,7 +242,7 @@ const SupermarketList = memo((props: Props) => {
           font-weight: bold;
           transition: background 300ms ease;
           padding: 0 2em;
-          line-height: 3em;
+          line-height: 2.5em;
         }
         .sort-by-button:hover {
           background: #333;
