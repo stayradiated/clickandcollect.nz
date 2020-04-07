@@ -1,12 +1,15 @@
+import Head from 'next/head'
+import Link from 'next/link'
+import classNames from 'classnames'
+import fetch from 'isomorphic-unfetch'
+import useSWR from 'swr'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
-import Head from 'next/head'
-import useSWR from 'swr'
-import fetch from 'isomorphic-unfetch'
-import classNames from 'classnames'
 
 import SupermarketList from './supermarket-list'
 import SupermarketInfo from './supermarket-info'
+
+import EntypoBell from 'react-entypo-icons/lib/entypo/Bell'
 
 import { Supermarket } from './types'
 import { first, buildSlug } from './utils'
@@ -56,6 +59,18 @@ const App = () => {
       <main className={classNames({ selected: supermarket != null })}>
         {supermarket && <SupermarketInfo supermarket={supermarket} />}
         <footer>
+          <Link href="/subscribe-to-product-updates" passHref>
+            <a>
+              <EntypoBell
+                style={{
+                  width: '1.2em',
+                  height: '1.2em',
+                  marginRight: '0.5em',
+                }}
+              />
+              Email Notifications
+            </a>
+          </Link>
           <a
             target="_blank"
             href="https://contact.george.czabania.com/?product=clickandcollect.nz"
@@ -74,7 +89,6 @@ const App = () => {
         body {
           width: 100vw;
           max-width: none;
-          font-family: 'Source Sans Pro', sans-serif;
           margin: 0;
           padding: 0;
         }

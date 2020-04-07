@@ -3,6 +3,8 @@ import { DateTime } from 'luxon'
 import useSWR from 'swr'
 import fetch from 'isomorphic-unfetch'
 
+import EntypoShoppingCart from 'react-entypo-icons/lib/entypo/ShoppingCart'
+
 import Calendar from './calendar'
 import SupermarketChart from './supermarket-chart'
 
@@ -80,12 +82,11 @@ const SupermarketInfo = memo((props: Props) => {
           target="_blank"
           href={getSupermarketLink(supermarket)}
         >
-          Shop Online
+          <EntypoShoppingCart /> Shop Online
         </a>
         {lastUpdatedAt && (
           <p className="last-updated-at">
-            Last updated at{' '}
-            {DateTime.fromISO(lastUpdatedAt).toFormat(DATE_FORMAT)}
+            Last updated {DateTime.fromISO(lastUpdatedAt).toRelative()}
           </p>
         )}
       </header>
