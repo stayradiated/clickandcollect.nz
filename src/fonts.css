@@ -21,3 +21,7 @@
   src: local('Source Sans Pro Bold'),
     url(//brick.freetls.fastly.net/fonts/sourcesanspro/700.woff) format('woff');
 }
+
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+}
