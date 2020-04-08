@@ -3,6 +3,8 @@ import { useCallback, useState } from 'react'
 import Link from 'next/link'
 
 import Spinner from '../spinner'
+import { CLOUD_ENDPOINT } from '../constants'
+import { QUERY_SUBSCRIBE_TO_PRODUCT_UPDATES } from '../queries'
 
 interface FormState {
   submitted: boolean,
@@ -26,16 +28,18 @@ const SubscribeToProductUpdatesPage = () => {
 
       setFormStatus({ submitted: false, loading: true, email })
 
-      const response = await fetch(
-        'https://cloud.clickandcollect.nz/api/subscribe-to-product-updates',
-        {
-          method: 'POST',
-          body: JSON.stringify({ email }),
-          headers: {
-            'content-type': 'application/json; charset=utf-8',
+      const response = await fetch(CLOUD_ENDPOINT, {
+        method: 'POST',
+        body: JSON.stringify({
+          query: QUERY_SUBSCRIBE_TO_PRODUCT_UPDATES,
+          variables: {
+            email,
           },
+        }),
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
         },
-      )
+      })
       const body = await response.json()
 
       setFormStatus({ submitted: true, loading: false, email })
