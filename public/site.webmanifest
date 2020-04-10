@@ -1,0 +1,12 @@
+{
+  "name": "Click & Collect NZ",
+  "short_name": "Click & Collect NZ",
+  "icons": [
+      {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+      }
+  ],
+  "display": "standalone"
+}
