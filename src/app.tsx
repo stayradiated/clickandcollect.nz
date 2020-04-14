@@ -1,21 +1,18 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import classNames from 'classnames'
-import fetch from 'isomorphic-unfetch'
 import useSWR from 'swr'
 import { useRouter } from 'next/router'
-import { useState, useEffect } from 'react'
+import EntypoBell from 'react-entypo-icons/lib/entypo/Bell'
 
 import SupermarketList from './supermarket-list'
 import SupermarketInfo from './supermarket-info'
 
-import EntypoBell from 'react-entypo-icons/lib/entypo/Bell'
+import { useViewerSubscriptions } from './hooks'
 
 import { Supermarket } from './types'
-import { first, buildSlug } from './utils'
+import { fetcher, first, buildSlug } from './utils'
 import { API_ENDPOINT } from './constants'
-
-const fetcher = (url) => fetch(url).then((r) => r.json())
 
 const App = () => {
   const router = useRouter()
@@ -27,12 +24,16 @@ const App = () => {
   if (swrError != null) {
     console.error(swrError)
   }
+  const { subscriptions = [] } = useViewerSubscriptions()
 
   const isLoading = data == null
   const supermarkets = data || []
 
   const storeSlug = first(router.query.s)
   const supermarket = supermarkets.find((s) => buildSlug(s) === storeSlug)
+  const subscription = subscriptions.find(
+    (s) => s.supermarket.id === supermarket?.id.toString(),
+  )
 
   const title = supermarket
     ? `${supermarket.chain} ${supermarket.name} - Click & Collect`
@@ -63,7 +64,12 @@ const App = () => {
       </Head>
       <SupermarketList isLoading={isLoading} supermarkets={supermarkets} />
       <main className={classNames({ selected: supermarket != null })}>
-        {supermarket && <SupermarketInfo supermarket={supermarket} />}
+        {supermarket && (
+          <SupermarketInfo
+            supermarket={supermarket}
+            subscription={subscription}
+          />
+        )}
         <footer>
           <a
             target="_blank"
@@ -117,14 +123,20 @@ const App = () => {
         }
         footer {
           padding: 0;
-          border-top: 1px solid #eee;
           display: flex;
           justify-content: flex-end;
+          background: var(--background);
         }
         footer a {
+          color: var(--paragraph);
+          text-decoration: none;
           display: block;
-          border-left: 1px solid #eee;
+          border-left: 1px solid rgba(255, 255, 255, 0.1);
           padding: 1em 2em;
+          font-size: 0.8em;
+        }
+        footer a:hover {
+          text-decoration: underline;
         }
         @media only screen and (min-width: 500px) {
           main {

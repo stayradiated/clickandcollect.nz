@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "classnames": "2.3.1",
-    "isomorphic-unfetch": "3.1.0",
+    "cross-fetch": "3.1.4",
+    "graphql-request": "3.5.0",
     "luxon": "2.0.2",
     "mem": "9.0.1",
     "next": "11.1.0",

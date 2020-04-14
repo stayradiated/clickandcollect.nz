@@ -1,23 +1,22 @@
 import { memo, useState, useCallback } from 'react'
 import { DateTime } from 'luxon'
 import useSWR from 'swr'
-import fetch from 'isomorphic-unfetch'
 
 import EntypoShoppingCart from 'react-entypo-icons/lib/entypo/ShoppingCart'
+
+import graphQLClient, { MUTATION_CREATE_SUBSCRIPTION } from './graphql'
 
 import Calendar from './calendar'
 import SupermarketChart from './supermarket-chart'
 
-import { Snapshot, Supermarket } from './types'
+import { Snapshot, Supermarket, Subscription } from './types'
 import { API_ENDPOINT } from './constants'
+import { fetcher } from './utils'
 
 interface Props {
   supermarket: Supermarket,
+  subscription: Subscription,
 }
-
-const DATE_FORMAT = 'LLLL d yyyy, h:mm:ss a'
-
-const fetcher = (url) => fetch(url).then((r) => r.json())
 
 const getSupermarketLink = (supermarket: Supermarket) => {
   switch (supermarket.chain) {
@@ -40,8 +39,38 @@ const getSupermarketLink = (supermarket: Supermarket) => {
   }
 }
 
+interface SubscribeButtonProps {
+  supermarketId: number,
+  subscription: Subscription,
+}
+
+const SubscribeButton = (props: SubscribeButtonProps) => {
+  const { supermarketId, subscription } = props
+
+  const [[subscribeInProgress, subscribed], setSubscribed] = useState([
+    false,
+    false,
+  ])
+
+  const handleSubscribe = useCallback(async () => {
+    setSubscribed([true, false])
+    await graphQLClient.request(MUTATION_CREATE_SUBSCRIPTION, {
+      supermarketId,
+    })
+    setSubscribed([false, true])
+  }, [supermarketId])
+
+  return subscription != null || subscribed ? (
+    <span>You Are Subscribed!</span>
+  ) : (
+    <button onClick={handleSubscribe} disabled={subscribeInProgress}>
+      {subscribeInProgress ? 'Subscribing...' : 'Subscribe'}
+    </button>
+  )
+}
+
 const SupermarketInfo = memo((props: Props) => {
-  const { supermarket } = props
+  const { supermarket, subscription } = props
 
   const { data, error } = useSWR<Snapshot[]>(
     `${API_ENDPOINT}/slots/${supermarket?.id}.json`,
@@ -90,6 +119,12 @@ const SupermarketInfo = memo((props: Props) => {
           </p>
         )}
       </header>
+
+      <SubscribeButton
+        key={supermarket.id}
+        supermarketId={supermarket.id}
+        subscription={subscription}
+      />
 
       <Calendar supermarket={supermarket} snapshot={snapshot} />
 

@@ -1,10 +1,10 @@
-import fetch from 'isomorphic-unfetch'
 import { useCallback, useState } from 'react'
-import Link from 'next/link'
 
 import Spinner from '../spinner'
-import { CLOUD_ENDPOINT } from '../constants'
-import { QUERY_SUBSCRIBE_TO_PRODUCT_UPDATES } from '../queries'
+import graphQLClient, {
+  MUTATION_SUBSCRIBE_TO_PRODUCT_UPDATES,
+} from '../graphql'
+import BoringContainer from '../boring-container'
 
 interface FormState {
   submitted: boolean,
@@ -16,7 +16,7 @@ const SubscribeToProductUpdatesPage = () => {
   const [{ submitted, loading, email }, setFormStatus] = useState<FormState>({
     submitted: false,
     loading: false,
-    email: 'george@czabania.com',
+    email: null,
   })
 
   const handleSubmit = useCallback(
@@ -28,19 +28,9 @@ const SubscribeToProductUpdatesPage = () => {
 
       setFormStatus({ submitted: false, loading: true, email })
 
-      const response = await fetch(CLOUD_ENDPOINT, {
-        method: 'POST',
-        body: JSON.stringify({
-          query: QUERY_SUBSCRIBE_TO_PRODUCT_UPDATES,
-          variables: {
-            email,
-          },
-        }),
-        headers: {
-          'content-type': 'application/json; charset=utf-8',
-        },
+      await graphQLClient.request(MUTATION_SUBSCRIBE_TO_PRODUCT_UPDATES, {
+        email,
       })
-      const body = await response.json()
 
       setFormStatus({ submitted: true, loading: false, email })
     },
@@ -48,16 +38,8 @@ const SubscribeToProductUpdatesPage = () => {
   )
 
   return (
-    <div className="container">
-      <h2>
-        <Link href="/" passHref>
-          <a>Click & Collect NZ</a>
-        </Link>
-      </h2>
-      <h3>
-        <span className="subtitle">Upcoming Feature:</span> 🔔 Email
-        Notifications
-      </h3>
+    <BoringContainer>
+      <h2>🔔 Email Notifications are coming soon!</h2>
 
       <p>
         Would you like to receive an email notification when new slots become
@@ -77,15 +59,10 @@ const SubscribeToProductUpdatesPage = () => {
       {submitted === true && (
         <p className="fade-in">
           When this feature is ready to use, I will let you know at{' '}
-          <code>{email}</code>.<br />
+          <span className="email">{email}</span>.<br />
           Thank you for your support!
         </p>
       )}
-      <p>
-        Cheers,
-        <br />
-        George.
-      </p>
 
       {submitted === false && (
         <section>
@@ -99,7 +76,11 @@ const SubscribeToProductUpdatesPage = () => {
             <button type="submit" disabled={loading}>
               {loading && (
                 <div className="spinner">
-                  <Spinner height="20px" width="20px" />
+                  <Spinner
+                    height="20px"
+                    width="20px"
+                    backgroundColor={[35, 41, 70]}
+                  />
                 </div>
               )}
               Let Me Know When Notifications Are Ready
@@ -111,49 +92,42 @@ const SubscribeToProductUpdatesPage = () => {
         </section>
       )}
 
-      <style jsx global>{`
-        body {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-      `}</style>
       <style jsx>{`
-        .container {
-          margin 0;
-          padding: 1em;
-          border-radius: 4px;
-          border: 1px solid #eee;
-        }
         h2 {
           margin: 0 0 0.3em;
-        }
-        h3 {
-          margin: 0 0 0.3em;
+          color: var(--card-heading);
         }
         .subtitle {
-          color: #777;
+          color: var(--paragraph);
+        }
+        p {
+          color: var(--card-paragraph);
         }
         .form {
+          display: grid;
+          grid-template-columns: auto;
+          grid-gap: 1em;
         }
-        .form input {
-          width: 100%;
-          box-sizing: border-box;
+        .form input:focus {
+          outline: none;
         }
         .form button {
-          width: 100%;
+          cursor: pointer;
+          border: none;
+          border-radius: 4px;
           box-sizing: border-box;
-          background-color: #4b7bec;
-          color: #fff;
+          background-color: var(--button);
+          color: var(--button-text);
           font-weight: bold;
           position: relative;
           overflow: hidden;
+          padding: 1em 1em;
         }
         .form button[disabled] {
           opacity: 1;
         }
         .form button:hover {
-          background-color: #3867d6;
+          opacity: 0.9;
         }
         .spinner {
           position: absolute;
@@ -161,7 +135,7 @@ const SubscribeToProductUpdatesPage = () => {
           left: 0;
           width: 100%;
           height: 100%;
-          background-color: #4b7bec;
+          background-color: var(--button);
           display: flex;
           justify-content: center;
           align-items: center;
@@ -171,27 +145,27 @@ const SubscribeToProductUpdatesPage = () => {
           color: #999;
           font-size: 0.7em;
         }
+        .email {
+          background-color: rgba(255, 250, 101, 0.3);
+        }
         .fade-in {
           animation: fade-in 1s;
         }
         @keyframes fade-in {
-          0% { background-color: rgba(255, 250, 101, 0.7);}
-          100% { background-color: rgba(255, 250, 101, 0);}
+          0% {
+            background-color: rgba(255, 250, 101, 0.7);
+          }
+          100% {
+            background-color: rgba(255, 250, 101, 0);
+          }
         }
         @media only screen and (min-width: 640px) {
           .form {
-            display: flex;
-          }
-          .form input {
-            flex: 1;
-            width: auto;
-          }
-          .form button {
-            width: auto;
+            grid-template-columns: 1fr auto;
           }
         }
       `}</style>
-    </div>
+    </BoringContainer>
   )
 }
 
