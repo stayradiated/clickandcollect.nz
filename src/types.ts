@@ -18,4 +18,9 @@ export interface Snapshot {
   slots: Record<string, number>,
 }
 
+export interface Subscription {
+  id: string,
+  supermarket: Supermarket,
+}
+
 export type Coords = [number, number]

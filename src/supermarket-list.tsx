@@ -3,7 +3,7 @@ import { useDebouncedCallback } from 'use-debounce'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import classNames from 'classnames'
-import { useSessionStorage } from 'react-use'
+import useLocalStorage from 'react-use/lib/useLocalStorage'
 
 import EntypoLocationPin from 'react-entypo-icons/lib/entypo/LocationPin'
 import EntypoSelectArrows from 'react-entypo-icons/lib/entypo/SelectArrows'
@@ -62,15 +62,15 @@ const performSearch = (
 }
 
 const SupermarketList = memo((props: Props) => {
-  const { isLoading, supermarkets } = props
+  const { isLoading, supermarkets = [] } = props
 
   const router = useRouter()
   const initialQuery = first(router.query.q)
 
-  const [sortBy, setSortBy] = useSessionStorage<SORT_BY>(
+  const [sortBy, setSortBy] = useLocalStorage<SORT_BY>(
     'sort_by',
     SORT_BY.NAME,
-    true,
+    { raw: true },
   )
   const geolocation = useGeolocation(sortBy === SORT_BY.LOCATION)
 
@@ -223,6 +223,19 @@ const SupermarketList = memo((props: Props) => {
         }
         .input {
           margin: 1em;
+          background: rgba(255, 255, 255, 0.2);
+          color: #fff;
+          border: none;
+          line-height: 3em;
+          padding: 0 1em;
+          border-radius: 4px;
+        }
+        .input::placeholder {
+          color: #fff;
+        }
+        .input:focus {
+          background: #fff;
+          color: #000;
         }
 
         .sort-by {
@@ -309,16 +322,17 @@ const SupermarketList = memo((props: Props) => {
           background: rgba(255, 255, 255, 0.1);
         }
         .list-item-link {
+          text-decoration: none;
           display: grid;
           grid-template-areas:
             'logo name available'
-            '_ address address';
-          grid-template-columns: 2em 1fr auto;
+            'logo address address';
+          grid-template-columns: auto 1fr auto;
+          grid-template-rows: 1.75em 1.75em;
           grid-gap: 0 1em;
           color: #fff;
           cursor: default;
-          line-height: 1.5em;
-          padding: 0.5em 1em;
+          padding: 0 1em;
         }
         .list-item-link:hover {
           text-decoration: none;
@@ -331,8 +345,12 @@ const SupermarketList = memo((props: Props) => {
 
         .logo {
           position: relative;
-          font-size: 0.75em;
-          height: 2em;
+          margin-top: 0.5em;
+          height: 2.5em;
+          width: 2.5em;
+          line-height: 2.5em;
+          border-radius: 2.5em;
+          overflow: hidden;
         }
         .logo:before {
           display: block;
@@ -341,8 +359,7 @@ const SupermarketList = memo((props: Props) => {
           left: 0;
           width: 100%;
           height: 100%;
-          border-radius: 4px;
-          margin-right: 1em;
+          font-size: 0.8em;
           text-align: center;
           font-weight: bold;
         }
@@ -370,6 +387,7 @@ const SupermarketList = memo((props: Props) => {
         .name {
           grid-area: name;
           font-weight: bold;
+          line-height: 2em;
 
           white-space: nowrap;
           overflow: hidden;
@@ -378,9 +396,10 @@ const SupermarketList = memo((props: Props) => {
 
         .address {
           grid-area: address;
-          color: #ccc;
+          color: #aaa;
           font-style: italic;
           font-size: 0.8em;
+          line-height: 1.5em;
 
           white-space: nowrap;
           overflow: hidden;
@@ -394,6 +413,7 @@ const SupermarketList = memo((props: Props) => {
         .available {
           grid-area: available;
           font-weight: bold;
+          line-height: 2em;
         }
 
         .unavailable .available {

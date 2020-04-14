@@ -1,6 +1,9 @@
 import mem from 'mem'
+import fetch from 'cross-fetch'
 
 import { Coords, Supermarket } from './types'
+
+export const fetcher = (url) => fetch(url).then((r) => r.json())
 
 export const toSum = (sum, value) => sum + value
 
@@ -44,8 +47,6 @@ Supermarket[],
 string
 >(
   (geolocation, supermarkets) => {
-    console.log(geolocation)
-
     if (geolocation == null) {
       return supermarkets
     }
