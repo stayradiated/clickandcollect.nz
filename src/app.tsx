@@ -73,7 +73,7 @@ const App = () => {
         <footer>
           <a
             target="_blank"
-            href="https://contact.george.czabania.com/?product=clickandcollect.nz"
+            href="mailto:george@czabania.com"
           >
             Feedback
           </a>
