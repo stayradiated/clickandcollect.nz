@@ -40,8 +40,8 @@ mutation($subscriptionId: ID!) {
 }`
 
 export const MUTATION_DESTROY_ALL_SUBSCRIPTIONS = `
-mutation($userId: ID!) {
-  destroyAllSubscriptions(input: { userId: $userId })
+mutation {
+  destroyAllSubscriptions
 }`
 
 export default graphQLClient

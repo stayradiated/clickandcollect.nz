@@ -1,11 +1,15 @@
 import { memo, useState, useCallback } from 'react'
 import { DateTime } from 'luxon'
 import useSWR from 'swr'
+import Link from 'next/link'
 
+import EntypoBell from 'react-entypo-icons/lib/entypo/Bell'
 import EntypoShoppingCart from 'react-entypo-icons/lib/entypo/ShoppingCart'
 
+import { LOGIN_URL } from './constants'
 import graphQLClient, { MUTATION_CREATE_SUBSCRIPTION } from './graphql'
 
+import Spinner from './spinner'
 import Calendar from './calendar'
 import SupermarketChart from './supermarket-chart'
 
@@ -16,6 +20,8 @@ import { fetcher } from './utils'
 interface Props {
   supermarket: Supermarket,
   subscription: Subscription,
+  loggedIn: boolean,
+  loadingViewer: boolean,
 }
 
 const getSupermarketLink = (supermarket: Supermarket) => {
@@ -40,12 +46,14 @@ const getSupermarketLink = (supermarket: Supermarket) => {
 }
 
 interface SubscribeButtonProps {
+  loggedIn: boolean,
+  loadingViewer: boolean,
   supermarketId: number,
   subscription: Subscription,
 }
 
 const SubscribeButton = (props: SubscribeButtonProps) => {
-  const { supermarketId, subscription } = props
+  const { loadingViewer, loggedIn, supermarketId, subscription } = props
 
   const [[subscribeInProgress, subscribed], setSubscribed] = useState([
     false,
@@ -60,17 +68,49 @@ const SubscribeButton = (props: SubscribeButtonProps) => {
     setSubscribed([false, true])
   }, [supermarketId])
 
-  return subscription != null || subscribed ? (
-    <span>You Are Subscribed!</span>
-  ) : (
+  if (loadingViewer) {
+    return <Spinner backgroundColor={[0, 0, 0]} />
+  }
+
+  if (!loggedIn) {
+    return (
+      <a href={LOGIN_URL}>Login to manage notifications</a>
+    )
+  }
+
+  if (subscription != null || subscribed) {
+    return (
+      <Link href="/notifications" passHref>
+        <a>
+          <EntypoBell
+            style={{
+              width: '1.2em',
+              height: '1.2em',
+              marginRight: '0.5em',
+            }}
+          />
+          Subscribed.
+        </a>
+      </Link>
+    )
+  }
+
+  return (
     <button onClick={handleSubscribe} disabled={subscribeInProgress}>
+      <EntypoBell
+        style={{
+          width: '1.2em',
+          height: '1.2em',
+          marginRight: '0.5em',
+        }}
+      />
       {subscribeInProgress ? 'Subscribing...' : 'Subscribe'}
     </button>
   )
 }
 
 const SupermarketInfo = memo((props: Props) => {
-  const { supermarket, subscription } = props
+  const { loadingViewer, loggedIn, supermarket, subscription } = props
 
   const { data, error } = useSWR<Snapshot[]>(
     `${API_ENDPOINT}/slots/${supermarket?.id}.json`,
@@ -104,6 +144,13 @@ const SupermarketInfo = memo((props: Props) => {
       <header className="header">
         <h2 className="title">
           {supermarket.chain} {supermarket.name}
+          <SubscribeButton
+            key={supermarket.id}
+            loggedIn={loggedIn}
+            loadingViewer={loadingViewer}
+            supermarketId={supermarket.id}
+            subscription={subscription}
+          />
         </h2>
         <p className="address">{supermarket.address}</p>
         <a
@@ -111,7 +158,7 @@ const SupermarketInfo = memo((props: Props) => {
           target="_blank"
           href={getSupermarketLink(supermarket)}
         >
-          <EntypoShoppingCart /> Shop Online
+          <EntypoShoppingCart style={{marginRight: '0.5em'}}/> Shop Online
         </a>
         {lastUpdatedAt && (
           <p className="last-updated-at">
@@ -119,12 +166,6 @@ const SupermarketInfo = memo((props: Props) => {
           </p>
         )}
       </header>
-
-      <SubscribeButton
-        key={supermarket.id}
-        supermarketId={supermarket.id}
-        subscription={subscription}
-      />
 
       <Calendar supermarket={supermarket} snapshot={snapshot} />
 
@@ -156,15 +197,18 @@ const SupermarketInfo = memo((props: Props) => {
         }
         .open-store {
           grid-area: open-store;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           margin: 0 0 0.5em;
-          display: block;
           text-align: center;
           color: #17c0eb;
           font-size: 1em;
           border: 3px solid #18dcff;
           border-radius: 4px;
-          padding: 0.2em 0.4em;
+          padding: 0 0.4em;
           font-weight: bold;
+          text-decoration: none;
         }
         .open-store:focus {
           background: none;

@@ -2,7 +2,7 @@ import useSWR from 'swr'
 import { useState, useCallback } from 'react'
 import classNames from 'classnames'
 
-import { CLOUD_ENDPOINT } from '../constants'
+import { LOGIN_URL } from '../constants'
 import graphQLClient, {
   MUTATION_DESTROY_SUBSCRIPTION,
   MUTATION_DESTROY_ALL_SUBSCRIPTIONS,
@@ -96,12 +96,10 @@ const UnsubscribeButton = (props: UnsubscribeButtonProps) => {
 
   const button = unsubscribed ? (
     <span>Unsubscribed</span>
-  ) : unsubscribeInProgress ? (
-    <span>Unsubscribing...</span>
   ) : (
-    <a href="#" className="unsubscribe-button" onClick={handleUnsubscribe}>
-      Unsubscribe
-    </a>
+    <button className="unsubscribe-button" onClick={handleUnsubscribe} disabled={unsubscribeInProgress}>
+    {unsubscribeInProgress ? 'Unsubscribing...' : 'Unsubscribe'}
+    </button>
   )
 
   return (
@@ -175,9 +173,7 @@ const Details = (props: DetailsProps) => {
 
   const handleUnsubscribeAll = useCallback(async () => {
     try {
-      await graphQLClient.request(MUTATION_DESTROY_ALL_SUBSCRIPTIONS, {
-        userId,
-      })
+      await graphQLClient.request(MUTATION_DESTROY_ALL_SUBSCRIPTIONS)
       setUnsubscribed(subscriptions.map((s) => s.id))
     } catch (error) {
       console.error(error)
@@ -209,9 +205,11 @@ const Details = (props: DetailsProps) => {
       </ul>
 
       {subscriptionCount > 1 && (
-        <a href="#" onClick={handleUnsubscribeAll}>
-          Unsubscribe from all supermarkets.
-        </a>
+        <div className='unsubscribe-all'>
+          <a href="#" onClick={handleUnsubscribeAll}>
+            Unsubscribe from all supermarkets.
+          </a>
+        </div>
       )}
 
       <style jsx>{`
@@ -224,27 +222,44 @@ const Details = (props: DetailsProps) => {
           border-radius: 4px;
           padding: 0 0.5em;
         }
+
+        .unsubscribe-all {
+          text-align: right;
+        }
+        a {
+          text-decoration: none;
+        }
+        a:hover {
+          text-decoration: underline;
+        }
       `}</style>
     </>
   )
 }
 
 const NotificationsPage = () => {
-  const { loading, viewer, subscriptions } = useViewerSubscriptions()
+  const { loggedIn, loading, viewer, subscriptions } = useViewerSubscriptions()
 
-  const isLoggedIn = !loading && viewer != null
-  const userId = isLoggedIn && viewer.id
-  const email = isLoggedIn && viewer.email
+  const userId = viewer?.id
+  const email = viewer?.email
 
   return (
     <BoringContainer>
       <h3>🔔 Email Notifications</h3>
 
       {loading && <Loading />}
-      {!loading && isLoggedIn === false && (
-        <a href={`${CLOUD_ENDPOINT}/login`}>Please log in</a>
+      {!loading && loggedIn === false && (
+        <p>To manage your email notifications you will need to login first.
+        <br/>
+        <br/>
+        You do not need a password to login<br />
+        Instead a 6 digit code will be sent to your email address.
+        <br/>
+        <br/>
+        <a href={LOGIN_URL}>Login or Create Account</a>
+        </p>
       )}
-      {isLoggedIn && (
+      {loggedIn && (
         <Details userId={userId} email={email} subscriptions={subscriptions} />
       )}
     </BoringContainer>

@@ -1,8 +1,9 @@
 import { ReactNode } from 'react'
 import Link from 'next/link'
+import EntypoChevronLeft from 'react-entypo-icons/lib/entypo/ChevronLeft'
 
 interface Props {
-  children: ReactNode,
+  children: ReactNode
 }
 
 const BoringContainer = (props: Props) => {
@@ -12,7 +13,10 @@ const BoringContainer = (props: Props) => {
     <div className="container">
       <h1>
         <Link href="/" passHref>
-          <a>Click & Collect NZ</a>
+          <a>
+            <EntypoChevronLeft style={{marginTop: '6px' }}/>
+            Click & Collect NZ
+          </a>
         </Link>
       </h1>
 
@@ -37,6 +41,10 @@ const BoringContainer = (props: Props) => {
         }
         h1 a {
           color: var(--headline);
+          text-decoration: none;
+        }
+        h1 a:hover {
+          text-decoration: underline;
         }
       `}</style>
     </div>

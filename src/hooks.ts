@@ -13,8 +13,11 @@ const useViewerSubscriptions = () => {
   const viewer = data?.viewer
   const subscriptions = viewer?.subscriptions
 
+  const loggedIn = !loading && viewer != null
+
   return {
     loading,
+    loggedIn,
     viewer,
     subscriptions,
     error,
