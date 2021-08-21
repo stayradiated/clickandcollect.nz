@@ -32,10 +32,10 @@ const getSupermarketLink = (supermarket: Supermarket) => {
       return `https://${name}.store.freshchoice.co.nz/`
     }
     case 'New World': {
-      return 'https://www.ishopnewworld.co.nz/'
+      return 'https://www.newworld.co.nz/shop'
     }
     case "PAK'nSAVE": {
-      return 'https://www.paknsaveonline.co.nz/'
+      return 'https://www.paknsave.co.nz/shop'
     }
   }
 }
