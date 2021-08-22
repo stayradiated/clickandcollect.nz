@@ -71,18 +71,6 @@ const App = () => {
           />
         )}
         <footer>
-          <Link href="/subscribe-to-product-updates" passHref>
-            <a>
-              <EntypoBell
-                style={{
-                  width: '1.2em',
-                  height: '1.2em',
-                  marginRight: '0.5em',
-                }}
-              />
-              Email Notifications
-            </a>
-          </Link>
           <a
             target="_blank"
             href="https://contact.george.czabania.com/?product=clickandcollect.nz"
