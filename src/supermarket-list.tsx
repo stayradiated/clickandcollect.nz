@@ -97,7 +97,7 @@ const SupermarketList = memo((props: Props) => {
     setSortBy,
   ])
 
-  const [debouncedCallback] = useDebouncedCallback((query: string) => {
+  const debouncedCallback = useDebouncedCallback((query: string) => {
     setSearchQuery(query)
 
     const nextRouterQuery = { ...router.query }

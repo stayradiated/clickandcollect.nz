@@ -1,6 +1,9 @@
+/* eslint-disable unicorn/prefer-module */
+/** @type {import('next').NextConfig} */
 module.exports = {
+  reactStrictMode: true,
   exportPathMap: () => ({
-    '/': { page: '/index' },
+    '/': { page: '/' },
     '/subscribe-to-product-updates': { page: '/subscribe-to-product-updates' },
-  })
+  }),
 }

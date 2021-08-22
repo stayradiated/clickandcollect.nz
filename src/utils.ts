@@ -38,9 +38,13 @@ const calculateDistance = ([lat1, lon1]: Coords, [lat2, lon2]: Coords) => {
   return d
 }
 
+type SortSupermarketsByDistanceFn = (
+  coords: Coords,
+  supermarkets: Supermarket[],
+) => Supermarket[]
+
 export const sortSupermarketsByDistance = mem<
-[Coords, Supermarket[]],
-Supermarket[],
+SortSupermarketsByDistanceFn,
 string
 >(
   (geolocation, supermarkets) => {
