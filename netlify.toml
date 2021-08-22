@@ -1,3 +1,7 @@
+[build]
+    command = "./scripts/netlify.sh"
+[build.environment]
+    NPM_FLAGS="--prefix=./scripts/empty-project/"
 [[redirects]]
   from = "/*"
   to = "/index.html"
