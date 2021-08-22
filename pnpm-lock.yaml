@@ -6,6 +6,7 @@ specifiers:
   '@types/react': 17.0.19
   classnames: 2.3.1
   cross-fetch: 3.1.4
+  graphql: 15.5.1
   graphql-request: 3.5.0
   luxon: 2.0.2
   mem: 9.0.1
@@ -21,7 +22,8 @@ specifiers:
 dependencies:
   classnames: 2.3.1
   cross-fetch: 3.1.4
-  graphql-request: 3.5.0
+  graphql: 15.5.1
+  graphql-request: 3.5.0_graphql@15.5.1
   luxon: 2.0.2
   mem: 9.0.1
   next: 11.1.0_react-dom@17.0.2+react@17.0.2
@@ -2050,7 +2052,7 @@ packages:
   /graceful-fs/4.2.8:
     resolution: {integrity: sha512-qkIilPUYcNhJpd33n0GBXTB1MMPp14TxEsEs0pTrsSVucApsYzW5V+Q8Qxhik6KU3evy+qkAAowTByymK0avdg==}
 
-  /graphql-request/3.5.0:
+  /graphql-request/3.5.0_graphql@15.5.1:
     resolution: {integrity: sha512-Io89QpfU4rqiMbqM/KwMBzKaDLOppi8FU8sEccCE4JqCgz95W9Q8bvxQ4NfPALLSMvg9nafgg8AkYRmgKSlukA==}
     peerDependencies:
       graphql: 14.x || 15.x
@@ -2058,6 +2060,12 @@ packages:
       cross-fetch: 3.1.4
       extract-files: 9.0.0
       form-data: 3.0.1
+      graphql: 15.5.1
+    dev: false
+
+  /graphql/15.5.1:
+    resolution: {integrity: sha512-FeTRX67T3LoE3LWAxxOlW2K3Bz+rMYAC18rRguK4wgXaTZMiJwSUwDmPFo3UadAKbzirKIg5Qy+sNJXbpPRnQw==}
+    engines: {node: '>= 10.x'}
     dev: false
 
   /handlebars/4.7.7:
