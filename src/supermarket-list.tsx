@@ -361,6 +361,11 @@ const SupermarketList = memo((props: Props) => {
           background: #3bbdef;
           color: #fff;
         }
+        .list-item.supervalue .logo:before {
+          content: 'SV';
+          background: #d30c00;
+          color: #fff;
+        }
         .list-item.paknsave .logo:before {
           content: 'PS';
           background: #ffd600;
