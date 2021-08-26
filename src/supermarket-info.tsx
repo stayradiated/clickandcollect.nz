@@ -31,6 +31,13 @@ const getSupermarketLink = (supermarket: Supermarket) => {
         .split(',')[0]
       return `https://${name}.store.freshchoice.co.nz/`
     }
+    case 'SuperValue': {
+      const name = supermarket.name
+        .toLowerCase()
+        .replace(/\s/g, '')
+        .split(',')[0]
+      return `https://${name}.store.supervalue.co.nz/`
+    }
     case 'New World': {
       return 'https://www.newworld.co.nz/shop'
     }
